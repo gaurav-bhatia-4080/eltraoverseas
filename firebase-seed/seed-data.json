@@ -1,0 +1,255 @@
+{
+  "siteContent": {
+    "home": {
+      "branding": {
+        "brandName": "EltraOverseas",
+        "tagline": "Precision Fasteners Delivered Worldwide"
+      },
+      "hero": {
+        "badge": "Global Industrial Fastener Solutions",
+        "title": "Precision Fasteners",
+        "highlight": "Delivered Worldwide",
+        "description": "From high-tensile bolts to micro screws, we export premium industrial fasteners to 50+ countries. ISO certified quality, competitive pricing.",
+        "primaryCtaLabel": "Explore Products",
+        "secondaryCtaLabel": "Request Catalog",
+        "heroImageUrl": "https://i.ibb.co/mrZY2Lc3/download.jpg"
+      },
+      "productsSection": {
+        "eyebrow": "Our Products",
+        "title": "Industrial Fasteners for",
+        "highlight": "Every Application",
+        "description": "Browse our comprehensive catalog of precision-engineered fasteners manufactured to international standards."
+      },
+      "featuresSection": {
+        "header": {
+          "eyebrow": "Why Choose Us",
+          "title": "Built on Quality",
+          "highlight": "Delivered with Trust",
+          "description": "25+ years of expertise in manufacturing and exporting industrial fasteners to global markets."
+        },
+        "features": [
+          { "icon": "shield", "title": "ISO Certified Quality", "description": "All products meet ISO 9001:2015 standards with full traceability and quality documentation." },
+          { "icon": "factory", "title": "Direct Manufacturing", "description": "Vertically integrated production ensures competitive pricing and consistent quality control." },
+          { "icon": "truck", "title": "Global Logistics", "description": "Door-to-door delivery to 50+ countries with real-time tracking and customs clearance support." },
+          { "icon": "award", "title": "Industry Standards", "description": "DIN, ANSI, JIS, and custom specifications. We speak your industry's language." },
+          { "icon": "support", "title": "Technical Support", "description": "Engineering team available for product selection, custom solutions, and technical queries." },
+          { "icon": "leaf", "title": "Sustainable Practices", "description": "Eco-friendly manufacturing with recyclable materials and carbon-neutral shipping options." }
+        ]
+      },
+      "statsSection": {
+        "header": {
+          "eyebrow": "Global Impact",
+          "title": "Numbers That Speak",
+          "highlight": "For Themselves"
+        },
+        "stats": [
+          { "value": 50, "suffix": "+", "label": "Countries Served" },
+          { "value": 25, "suffix": "+", "label": "Years Experience" },
+          { "value": 10, "suffix": "K+", "label": "Products in Catalog" },
+          { "value": 98, "suffix": "%", "label": "On-Time Delivery" }
+        ]
+      },
+      "testimonialsSection": {
+        "header": {
+          "eyebrow": "Testimonials",
+          "title": "Trusted by Industry",
+          "highlight": "Leaders Worldwide"
+        },
+        "testimonials": [
+          {
+            "quote": "EltraOverseas has been our trusted supplier for over 10 years. Their quality and reliability are unmatched in the industry.",
+            "author": "Michael Chen",
+            "role": "Procurement Director",
+            "company": "AutoTech Industries, Germany"
+          },
+          {
+            "quote": "The technical support team helped us find the perfect fastener solution for our aerospace application. Outstanding expertise.",
+            "author": "Sarah Johnson",
+            "role": "Engineering Manager",
+            "company": "SkyBridge Aviation, USA"
+          },
+          {
+            "quote": "Fast shipping, competitive pricing, and consistent quality. They've streamlined our entire supply chain.",
+            "author": "Rajesh Patel",
+            "role": "Operations Head",
+            "company": "BuildMax Construction, UAE"
+          }
+        ]
+      },
+      "vlogsSection": {
+        "eyebrow": "Factory Vlogs",
+        "title": "See EltraOverseas in Action",
+        "description": "Follow the team through testing labs, packing bays, and logistics control rooms. Each vlog keeps customers updated on the real processes behind their orders."
+      },
+      "contactSection": {
+        "header": {
+          "eyebrow": "Contact",
+          "title": "Tell us about your next shipment",
+        "description": "Share specs, target markets, or compliance requirements and the EltraOverseas team will revert with documentation plus pricing."
+        },
+        "cards": [
+          { "icon": "mail", "heading": "Email", "detail": "sales@boltworks.com", "subDetail": "Response in less than 24 hrs" },
+          { "icon": "phone", "heading": "Phone", "detail": "+91 98200 44556", "subDetail": "Mon - Sat / 9am - 8pm IST" },
+          { "icon": "location", "heading": "Warehouse", "detail": "Plot 22, GIDC Industrial Estate, Mumbai", "subDetail": "Schedule a visit" },
+          { "icon": "clock", "heading": "Production", "detail": "Capacity 12M pcs / month", "subDetail": "Expedited runs available" }
+        ]
+      },
+      "footer": {
+        "description": "Your trusted global partner for premium industrial fasteners. Quality engineering, competitive pricing, worldwide delivery.",
+        "socialLinks": [
+          { "icon": "facebook", "url": "https://facebook.com" },
+          { "icon": "twitter", "url": "https://twitter.com" },
+          { "icon": "linkedin", "url": "https://linkedin.com" },
+          { "icon": "instagram", "url": "https://instagram.com" }
+        ],
+        "columns": [
+          {
+            "title": "Products",
+            "links": [
+              { "name": "Hex Bolts", "href": "/products/hex-bolts" },
+              { "name": "Machine Screws", "href": "/products/machine-screws" },
+              { "name": "Nuts & Washers", "href": "/products/nuts-washers" },
+              { "name": "Anchors", "href": "/products/anchors" },
+              { "name": "Custom Fasteners", "href": "/products/specialty-fasteners" }
+            ]
+          },
+          {
+            "title": "Company",
+            "links": [
+              { "name": "About Us", "href": "/#about" },
+              { "name": "Certifications", "href": "/#stats" },
+              { "name": "Sustainability", "href": "/contact" },
+              { "name": "Careers", "href": "mailto:hr@boltworks.com" }
+            ]
+          },
+          {
+            "title": "Resources",
+            "links": [
+              { "name": "Product Catalog", "href": "#" },
+              { "name": "Technical Specs", "href": "#" },
+              { "name": "Blog", "href": "/vlogs" },
+              { "name": "FAQ", "href": "#" }
+            ]
+          }
+        ],
+        "copyright": "© 2025 EltraOverseas. All rights reserved.",
+        "legalLinks": [
+          { "name": "Privacy Policy", "href": "#" },
+          { "name": "Terms of Service", "href": "#" }
+        ]
+      }
+    }
+  },
+  "products": {
+    "hex-bolts": {
+      "slug": "hex-bolts",
+      "name": "Hex Bolts",
+      "specs": "Grades 5.6 / 8.8 / 10.9 | M4 - M64",
+      "summary": "High-tensile hexagonal head bolts machined for structural and heavy-equipment assemblies.",
+      "description": "Our hex bolts are CNC-machined from alloy steel and stainless steel billets, heat-treated for consistent tensile strength, and finished with hot-dip galvanizing or zinc-nickel plating. Every lot is batch-tested for proof load, head soundness, and thread accuracy before export.",
+      "image": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&auto=format&fit=crop&q=80",
+      "gallery": [
+        "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?w=800&auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1581093588401-74d795f1b8d6?w=800&auto=format&fit=crop&q=80"
+      ],
+      "materials": ["Alloy Steel", "Carbon Steel", "SS 304/316"],
+      "applications": ["Steel fabrication", "Wind turbines", "Heavy machinery"],
+      "certifications": ["ISO 898-1", "ASTM A325", "EN 14399"]
+    },
+    "machine-screws": {
+      "slug": "machine-screws",
+      "name": "Machine Screws",
+      "specs": "M1 - M24 | Slotted / Phillips / Torx",
+      "summary": "Precision screws with tight tolerance threads for enclosures, switchgear, and electronics.",
+      "description": "EltraOverseas machine screws are roll-threaded for superior fatigue strength and supplied with multiple recess styles. Options include black oxide, zinc, nickel, and DLC coatings to match corrosion or cosmetic requirements.",
+      "image": "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=800&auto=format&fit=crop&q=80",
+      "gallery": [
+        "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=800&auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&auto=format&fit=crop&q=80"
+      ],
+      "materials": ["Brass", "SS 304", "Alloy Steel"],
+      "applications": ["Control panels", "Automotive interiors", "Consumer appliances"],
+      "certifications": ["DIN 963/965", "RoHS", "REACH"]
+    },
+    "nuts-washers": {
+      "slug": "nuts-washers",
+      "name": "Nuts & Washers",
+      "specs": "DIN / ISO / ASTM Standards",
+      "summary": "Complete pairing hardware including nyloc nuts, castle nuts, flat and spring washers.",
+      "description": "Each nut and washer is manufactured with controlled hardness to prevent galling and to maintain clamp load. Options include prevailing torque lock nuts, flange nuts, and Belleville washers for vibration-prone assemblies.",
+      "image": "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=800&auto=format&fit=crop&q=80",
+      "gallery": [
+        "https://images.unsplash.com/photo-1440342359743-84fcb8c21f21?w=800&auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?w=800&auto=format&fit=crop&q=80"
+      ],
+      "materials": ["Carbon Steel", "Phosphor Bronze", "Stainless Steel"],
+      "applications": ["Railways", "Oil & Gas", "Fabricated structures"],
+      "certifications": ["ISO 898-2", "DIN 6915", "NACE MR0175"]
+    },
+    "self-tapping-screws": {
+      "slug": "self-tapping-screws",
+      "name": "Self-Tapping Screws",
+      "specs": "ST2 - ST10 | Pan / CSK / Hex Washer",
+      "summary": "Self-drilling and tapping screws optimized for steel decks, composites, and plastics.",
+      "description": "Engineered drill points and case-hardened bodies enable quick penetration with minimal burr. Available with Ruspert, Geomet, and polymer top coats for 1000+ hour salt spray protection.",
+      "image": "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=800&auto=format&fit=crop&q=80",
+      "gallery": [
+        "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=800&auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1617469767053-d3b523a0b982?w=800&auto=format&fit=crop&q=80"
+      ],
+      "materials": ["Carbon Steel", "Bi-metal"],
+      "applications": ["Roofing", "HVAC ducts", "Furniture"],
+      "certifications": ["IFI-136", "ISO 1479"]
+    },
+    "anchors": {
+      "slug": "anchors",
+      "name": "Anchors",
+      "specs": "M6 - M30 | Sleeve / Wedge / Chemical",
+      "summary": "Anchoring solutions for concrete, masonry, and hollow blocks with tested pull-out values.",
+      "description": "We supply mechanical as well as chemical anchor systems complete with ETA assessments. Each anchor is proof-tested and delivered with torque charts, making them job-site ready.",
+      "image": "https://images.unsplash.com/photo-1617469767053-d3b523a0b982?w=800&auto=format&fit=crop&q=80",
+      "gallery": [
+        "https://images.unsplash.com/photo-1489515217757-5fd1be406fef?w=800&auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1507992781348-310259076fe0?w=800&auto=format&fit=crop&q=80"
+      ],
+      "materials": ["Carbon Steel", "Stainless Steel"],
+      "applications": ["Civil structures", "Solar mounting", "Industrial piping"],
+      "certifications": ["ETA Option 1", "UL", "CE"]
+    },
+    "specialty-fasteners": {
+      "slug": "specialty-fasteners",
+      "name": "Specialty Fasteners",
+      "specs": "Custom Prints | Small Batch",
+      "summary": "Special-form fasteners including captive screws, double-end studs, and bespoke hardware.",
+      "description": "For builds that demand non-standard geometries, EltraOverseas machines parts directly from 3D models or drawings. Capabilities include multi-axis turning, thread rolling, secondary operations, and bespoke packaging.",
+      "image": "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=800&auto=format&fit=crop&q=80",
+      "gallery": [
+        "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?w=800&auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=800&auto=format&fit=crop&q=80"
+      ],
+      "materials": ["Exotic Alloys", "Titanium", "Duplex Stainless"],
+      "applications": ["Defense", "Aerospace", "Renewables"],
+      "certifications": ["PPAP", "AS9100 docs", "IMDS"]
+    }
+  },
+  "vlogs": {
+    "precision-fastening-lab-tour": {
+      "slug": "precision-fastening-lab-tour",
+      "title": "Inside The Precision Fastening Lab",
+      "youtubeId": "zGUC0LC8rz4",
+      "summary": "Walk through our torque testing zone and see how each batch of bolts gets validated before export.",
+      "description": "Join the EltraOverseas quality engineers for an in-depth look at our lab instrumentation. We cover tensile testing, salt spray simulations, and the digital traceability workflow that keeps every fastener batch audit-ready.",
+      "publishedOn": "Jan 05, 2024",
+      "tags": ["Quality", "Testing", "Factory"]
+    },
+    "global-shipping-network-overview": {
+      "slug": "global-shipping-network-overview",
+      "title": "How We Ship Fasteners To 50+ Countries",
+      "youtubeId": "MoMb3ISXFko",
+      "summary": "Operations lead Neeraj explains how we consolidate orders, pack for corrosion protection, and dispatch worldwide.",
+      "description": "From booking containers to lining each crate with VCI protection sheets, this vlog shows how EltraOverseas keeps deliveries fast and flawless. Learn about our preferred ports, inspection checkpoints, and logistics partners.",
+      "publishedOn": "Dec 12, 2023",
+      "tags": ["Logistics", "Operations"]
+    }
+  }
+}
