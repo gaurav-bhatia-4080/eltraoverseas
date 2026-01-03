@@ -5,6 +5,7 @@ import { useHomeContent } from "@/hooks/useHomeContent";
 const HeroSection = () => {
   const { data: content, isLoading, error } = useHomeContent();
   const hero = content?.hero;
+  const catalogUrl = content?.resources?.catalogUrl || "#";
 
   if (isLoading) {
     return (
@@ -57,12 +58,21 @@ const HeroSection = () => {
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-4 mb-16 animate-fade-up-delay-3">
-            <Button variant="hero" size="xl">
-              {hero.primaryCtaLabel}
+            <Button
+              variant="hero"
+              size="xl"
+              onClick={() => {
+                const el = document.getElementById("products");
+                el?.scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              Explore Products
               <ArrowRight className="w-5 h-5 ml-1" />
             </Button>
-            <Button variant="hero-outline" size="xl">
-              {hero.secondaryCtaLabel}
+            <Button variant="hero-outline" size="xl" asChild>
+              <a href={catalogUrl} target="_blank" rel="noreferrer" download>
+                Download Catalog
+              </a>
             </Button>
           </div>
 
@@ -99,13 +109,6 @@ const HeroSection = () => {
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-float">
-        <span className="text-primary-foreground/50 text-xs uppercase tracking-widest">Scroll</span>
-        <div className="w-6 h-10 rounded-full border-2 border-primary-foreground/30 flex justify-center pt-2">
-          <div className="w-1.5 h-3 rounded-full bg-accent animate-bounce" />
-        </div>
-      </div>
     </section>
   );
 };

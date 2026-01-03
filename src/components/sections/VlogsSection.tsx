@@ -7,6 +7,7 @@ const VlogsSection = () => {
   const { data: content, isLoading: isContentLoading, error } = useHomeContent();
   const { data: vlogs, isLoading } = useVlogs();
   const section = content?.vlogsSection;
+  const isVisible = content?.visibility?.vlogs ?? true;
 
   if (isContentLoading) {
     return (
@@ -16,7 +17,7 @@ const VlogsSection = () => {
     );
   }
 
-  if (error || !section) {
+  if (error || !section || !isVisible) {
     return null;
   }
 

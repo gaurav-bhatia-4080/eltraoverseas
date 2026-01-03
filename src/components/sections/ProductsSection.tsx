@@ -7,6 +7,7 @@ const ProductsSection = () => {
   const { data: content, isLoading: isContentLoading, error } = useHomeContent();
   const { data: products, isLoading } = useProducts();
   const section = content?.productsSection;
+  const catalogUrl = content?.resources?.catalogUrl || "#";
 
   if (isContentLoading) {
     return (
@@ -25,15 +26,10 @@ const ProductsSection = () => {
       <div className="container-custom">
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <span className="text-accent font-semibold text-sm uppercase tracking-wider">
-            {section.eyebrow}
-          </span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mt-3 mb-5">
-            {section.title}
-            <br />
-            <span className="text-gradient">{section.highlight}</span>
-          </h2>
-          <p className="text-muted-foreground text-lg">{section.description}</p>
+          {section.eyebrow && (
+            <span className="text-accent font-semibold text-sm uppercase tracking-wider">{section.eyebrow}</span>
+          )}
+          {section.description && <p className="text-muted-foreground text-lg mt-3">{section.description}</p>}
         </div>
 
         {/* Products Grid */}
@@ -50,7 +46,7 @@ const ProductsSection = () => {
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               {/* Image */}
-              <div className="relative h-48 overflow-hidden">
+              <div className="relative h-40 overflow-hidden">
                 <img
                   src={product.image}
                   alt={product.name}
@@ -81,10 +77,13 @@ const ProductsSection = () => {
         {/* View All */}
         <div className="text-center mt-12">
           <a
-            href="#"
+            href={catalogUrl}
+            download
+            target="_blank"
+            rel="noreferrer"
             className="inline-flex items-center gap-2 text-foreground font-semibold hover:text-accent transition-colors group"
           >
-            View Full Catalog
+            Product Catalog
             <ArrowUpRight className="w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
           </a>
         </div>

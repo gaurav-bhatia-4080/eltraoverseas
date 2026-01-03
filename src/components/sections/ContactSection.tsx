@@ -36,6 +36,7 @@ const ContactSection = () => {
       name: "",
       email: "",
       company: "",
+      country: "",
       message: "",
     },
   });
@@ -61,6 +62,15 @@ const ContactSection = () => {
     return null;
   }
 
+  const formContent = section.form ?? {
+    namePlaceholder: "Priya Verma",
+    emailPlaceholder: "you@company.com",
+    companyPlaceholder: "Eltra Overseas",
+    countryPlaceholder: "India",
+    messagePlaceholder: "Share product grades, destinations, or certifications needed",
+    ctaLabel: "Send enquiry",
+  };
+
   return (
     <section id="contact" className="py-24 bg-gradient-steel">
       <div className="container-custom">
@@ -78,7 +88,7 @@ const ContactSection = () => {
               {section.cards.map((item) => {
                 const Icon = iconMap[item.icon as keyof typeof iconMap] ?? Mail;
                 return (
-                  <div key={item.heading} className="rounded-2xl border border-border bg-white/70 p-4 shadow-sm">
+                  <div key={item.heading} className="rounded-2xl border border-border bg-card/90 dark:bg-card/60 p-4 shadow-sm backdrop-blur">
                     <Icon className="w-5 h-5 text-accent" />
                     <p className="mt-3 text-sm text-muted-foreground">{item.heading}</p>
                     <p className="font-semibold text-foreground">{item.detail}</p>
@@ -100,7 +110,7 @@ const ContactSection = () => {
                       <FormItem>
                         <FormLabel>Full Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Priya Verma" {...field} />
+                          <Input placeholder={formContent.namePlaceholder} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -114,7 +124,7 @@ const ContactSection = () => {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="you@company.com" {...field} />
+                          <Input type="email" placeholder={formContent.emailPlaceholder} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -129,7 +139,21 @@ const ContactSection = () => {
                     <FormItem>
                       <FormLabel>Company</FormLabel>
                       <FormControl>
-                        <Input placeholder="Eltra Overseas" {...field} />
+                        <Input placeholder={formContent.companyPlaceholder} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="country"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Country</FormLabel>
+                      <FormControl>
+                        <Input placeholder={formContent.countryPlaceholder} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -143,7 +167,7 @@ const ContactSection = () => {
                     <FormItem>
                       <FormLabel>Message</FormLabel>
                       <FormControl>
-                        <Textarea rows={4} placeholder="Share product grades, destinations, or certifications needed" {...field} />
+                        <Textarea rows={4} placeholder={formContent.messagePlaceholder} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -151,7 +175,7 @@ const ContactSection = () => {
                 />
 
                 <Button type="submit" size="lg" className="w-full" disabled={form.formState.isSubmitting}>
-                  {form.formState.isSubmitting ? "Sending..." : "Send enquiry"}
+                  {form.formState.isSubmitting ? "Sending..." : formContent.ctaLabel}
                 </Button>
               </form>
             </Form>

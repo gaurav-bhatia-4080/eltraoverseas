@@ -29,7 +29,7 @@ const ProductDetail = () => {
   return (
     <>
       <Helmet>
-        <title>{`${product.name} | EltraOverseas Industrial Fasteners`}</title>
+        <title>{`${product.name} | Eltra Overseas Industrial Fasteners`}</title>
         <meta name="description" content={product.summary} />
       </Helmet>
       <Navbar />
@@ -44,7 +44,7 @@ const ProductDetail = () => {
 
           <div className="mt-6 grid lg:grid-cols-2 gap-8">
             <div className="space-y-4">
-              <div className="rounded-3xl overflow-hidden border border-border shadow-lg">
+              <div className="rounded-3xl overflow-hidden border border-border shadow-lg max-h-[420px]">
                 <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -53,7 +53,7 @@ const ProductDetail = () => {
                     key={image}
                     src={image}
                     alt={`${product.name} detail`}
-                    className="rounded-2xl border border-border object-cover h-36"
+                    className="rounded-2xl border border-border object-cover h-32"
                     loading="lazy"
                   />
                 ))}

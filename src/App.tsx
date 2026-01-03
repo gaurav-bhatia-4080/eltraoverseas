@@ -10,6 +10,8 @@ import Vlogs from "./pages/Vlogs";
 import VlogDetail from "./pages/VlogDetail";
 import Contact from "./pages/Contact";
 import ProductDetail from "./pages/ProductDetail";
+import Certificates from "./pages/Certificates";
+import Admin from "./pages/Admin";
 import ScrollManager from "./components/ScrollManager";
 
 const queryClient = new QueryClient();
@@ -28,6 +30,8 @@ const App = () => (
             <Route path="/vlogs/:slug" element={<VlogDetail />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/products/:slug" element={<ProductDetail />} />
+            <Route path="/certificates" element={<Certificates />} />
+            <Route path="/admin" element={<Admin />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

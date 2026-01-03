@@ -60,10 +60,8 @@ export type FooterContent = {
 };
 
 export type ProductsSectionContent = {
-  eyebrow: string;
-  title: string;
-  highlight: string;
-  description: string;
+  eyebrow?: string;
+  description?: string;
 };
 
 export type FeaturesSectionContent = {
@@ -94,6 +92,25 @@ export type ContactSectionContent = {
     description: string;
   };
   cards: ContactCard[];
+  form?: {
+    namePlaceholder: string;
+    emailPlaceholder: string;
+    companyPlaceholder: string;
+    countryPlaceholder: string;
+    messagePlaceholder: string;
+    ctaLabel: string;
+  };
+};
+
+export type ResourceSettings = {
+  catalogUrl: string;
+};
+
+export type Certificate = {
+  id: string;
+  title: string;
+  imageUrl: string;
+  downloadUrl: string;
 };
 
 export type HomeContent = {
@@ -106,6 +123,12 @@ export type HomeContent = {
   vlogsSection: VlogsSectionContent;
   contactSection: ContactSectionContent;
   footer: FooterContent;
+  visibility?: {
+    vlogs?: boolean;
+    testimonials?: boolean;
+  };
+  resources?: ResourceSettings;
+  certificates?: Certificate[];
 };
 
 export type Product = {

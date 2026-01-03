@@ -1,8 +1,15 @@
 {
   "siteContent": {
     "home": {
+      "visibility": {
+        "vlogs": true,
+        "testimonials": true
+      },
+      "resources": {
+        "catalogUrl": "https://example.com/eltra-overseas-catalog.pdf"
+      },
       "branding": {
-        "brandName": "EltraOverseas",
+        "brandName": "Eltra Overseas",
         "tagline": "Precision Fasteners Delivered Worldwide"
       },
       "hero": {
@@ -16,8 +23,6 @@
       },
       "productsSection": {
         "eyebrow": "Our Products",
-        "title": "Industrial Fasteners for",
-        "highlight": "Every Application",
         "description": "Browse our comprehensive catalog of precision-engineered fasteners manufactured to international standards."
       },
       "featuresSection": {
@@ -57,7 +62,7 @@
         },
         "testimonials": [
           {
-            "quote": "EltraOverseas has been our trusted supplier for over 10 years. Their quality and reliability are unmatched in the industry.",
+            "quote": "Eltra Overseas has been our trusted supplier for over 10 years. Their quality and reliability are unmatched in the industry.",
             "author": "Michael Chen",
             "role": "Procurement Director",
             "company": "AutoTech Industries, Germany"
@@ -78,14 +83,22 @@
       },
       "vlogsSection": {
         "eyebrow": "Factory Vlogs",
-        "title": "See EltraOverseas in Action",
+        "title": "See Eltra Overseas in Action",
         "description": "Follow the team through testing labs, packing bays, and logistics control rooms. Each vlog keeps customers updated on the real processes behind their orders."
       },
       "contactSection": {
         "header": {
           "eyebrow": "Contact",
           "title": "Tell us about your next shipment",
-        "description": "Share specs, target markets, or compliance requirements and the EltraOverseas team will revert with documentation plus pricing."
+          "description": "Share specs, target markets, or compliance requirements and the Eltra Overseas team will revert with documentation plus pricing."
+        },
+        "form": {
+          "namePlaceholder": "Priya Verma",
+          "emailPlaceholder": "you@company.com",
+          "companyPlaceholder": "Eltra Overseas",
+          "countryPlaceholder": "India",
+          "messagePlaceholder": "Share product grades, destinations, or certifications needed",
+          "ctaLabel": "Send enquiry"
         },
         "cards": [
           { "icon": "mail", "heading": "Email", "detail": "sales@boltworks.com", "subDetail": "Response in less than 24 hrs" },
@@ -97,10 +110,9 @@
       "footer": {
         "description": "Your trusted global partner for premium industrial fasteners. Quality engineering, competitive pricing, worldwide delivery.",
         "socialLinks": [
-          { "icon": "facebook", "url": "https://facebook.com" },
-          { "icon": "twitter", "url": "https://twitter.com" },
-          { "icon": "linkedin", "url": "https://linkedin.com" },
-          { "icon": "instagram", "url": "https://instagram.com" }
+          { "icon": "instagram", "url": "https://instagram.com/eltraoverseas" },
+          { "icon": "youtube", "url": "https://youtube.com/@eltraoverseas" },
+          { "icon": "linkedin", "url": "https://linkedin.com/company/eltraoverseas" }
         ],
         "columns": [
           {
@@ -117,27 +129,38 @@
             "title": "Company",
             "links": [
               { "name": "About Us", "href": "/#about" },
-              { "name": "Certifications", "href": "/#stats" },
-              { "name": "Sustainability", "href": "/contact" },
-              { "name": "Careers", "href": "mailto:hr@boltworks.com" }
+              { "name": "Global Reach", "href": "/#stats" },
+              { "name": "Certificates", "href": "/certificates" }
             ]
           },
           {
             "title": "Resources",
             "links": [
               { "name": "Product Catalog", "href": "#" },
-              { "name": "Technical Specs", "href": "#" },
-              { "name": "Blog", "href": "/vlogs" },
-              { "name": "FAQ", "href": "#" }
+              { "name": "Vlogs", "href": "/vlogs" }
             ]
           }
         ],
-        "copyright": "© 2025 EltraOverseas. All rights reserved.",
+        "copyright": "© 2023 Eltra Overseas. All rights reserved.",
         "legalLinks": [
-          { "name": "Privacy Policy", "href": "#" },
-          { "name": "Terms of Service", "href": "#" }
+          { "name": "Privacy Policy", "href": "https://example.com/privacy.pdf" },
+          { "name": "Terms of Service", "href": "https://example.com/terms.pdf" }
         ]
-      }
+      },
+      "certificates": [
+        {
+          "id": "iso-9001",
+          "title": "ISO 9001:2015",
+          "imageUrl": "https://images.unsplash.com/photo-1489515217757-5fd1be406fef?w=800&auto=format&fit=crop&q=80",
+          "downloadUrl": "https://example.com/certificates/iso-9001.pdf"
+        },
+        {
+          "id": "export-award",
+          "title": "Export Excellence Award",
+          "imageUrl": "https://images.unsplash.com/photo-1545239351-1141bd82e8a6?w=800&auto=format&fit=crop&q=80",
+          "downloadUrl": "https://example.com/certificates/export-award.pdf"
+        }
+      ]
     }
   },
   "products": {
@@ -161,7 +184,7 @@
       "name": "Machine Screws",
       "specs": "M1 - M24 | Slotted / Phillips / Torx",
       "summary": "Precision screws with tight tolerance threads for enclosures, switchgear, and electronics.",
-      "description": "EltraOverseas machine screws are roll-threaded for superior fatigue strength and supplied with multiple recess styles. Options include black oxide, zinc, nickel, and DLC coatings to match corrosion or cosmetic requirements.",
+      "description": "Eltra Overseas machine screws are roll-threaded for superior fatigue strength and supplied with multiple recess styles. Options include black oxide, zinc, nickel, and DLC coatings to match corrosion or cosmetic requirements.",
       "image": "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=800&auto=format&fit=crop&q=80",
       "gallery": [
         "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=800&auto=format&fit=crop&q=80",
@@ -221,7 +244,7 @@
       "name": "Specialty Fasteners",
       "specs": "Custom Prints | Small Batch",
       "summary": "Special-form fasteners including captive screws, double-end studs, and bespoke hardware.",
-      "description": "For builds that demand non-standard geometries, EltraOverseas machines parts directly from 3D models or drawings. Capabilities include multi-axis turning, thread rolling, secondary operations, and bespoke packaging.",
+      "description": "For builds that demand non-standard geometries, Eltra Overseas machines parts directly from 3D models or drawings. Capabilities include multi-axis turning, thread rolling, secondary operations, and bespoke packaging.",
       "image": "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=800&auto=format&fit=crop&q=80",
       "gallery": [
         "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?w=800&auto=format&fit=crop&q=80",
@@ -238,7 +261,7 @@
       "title": "Inside The Precision Fastening Lab",
       "youtubeId": "zGUC0LC8rz4",
       "summary": "Walk through our torque testing zone and see how each batch of bolts gets validated before export.",
-      "description": "Join the EltraOverseas quality engineers for an in-depth look at our lab instrumentation. We cover tensile testing, salt spray simulations, and the digital traceability workflow that keeps every fastener batch audit-ready.",
+      "description": "Join the Eltra Overseas quality engineers for an in-depth look at our lab instrumentation. We cover tensile testing, salt spray simulations, and the digital traceability workflow that keeps every fastener batch audit-ready.",
       "publishedOn": "Jan 05, 2024",
       "tags": ["Quality", "Testing", "Factory"]
     },
@@ -247,7 +270,7 @@
       "title": "How We Ship Fasteners To 50+ Countries",
       "youtubeId": "MoMb3ISXFko",
       "summary": "Operations lead Neeraj explains how we consolidate orders, pack for corrosion protection, and dispatch worldwide.",
-      "description": "From booking containers to lining each crate with VCI protection sheets, this vlog shows how EltraOverseas keeps deliveries fast and flawless. Learn about our preferred ports, inspection checkpoints, and logistics partners.",
+      "description": "From booking containers to lining each crate with VCI protection sheets, this vlog shows how Eltra Overseas keeps deliveries fast and flawless. Learn about our preferred ports, inspection checkpoints, and logistics partners.",
       "publishedOn": "Dec 12, 2023",
       "tags": ["Logistics", "Operations"]
     }

@@ -12,10 +12,10 @@ const Contact = () => {
   return (
     <>
       <Helmet>
-        <title>Contact EltraOverseas | Fastener Quotes & Support</title>
+        <title>Contact Eltra Overseas | Fastener Quotes & Support</title>
         <meta
           name="description"
-          content="Connect with the EltraOverseas team for RFQs, technical guidance, or export documentation related to industrial fasteners."
+          content="Connect with the Eltra Overseas team for RFQs, technical guidance, or export documentation related to industrial fasteners."
         />
       </Helmet>
       <Navbar />

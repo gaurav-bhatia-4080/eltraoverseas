@@ -4,11 +4,18 @@ import { ArrowLeft } from "lucide-react";
 import Navbar from "@/components/sections/Navbar";
 import Footer from "@/components/sections/Footer";
 import { useVlog } from "@/hooks/useVlogs";
+import { useHomeContent } from "@/hooks/useHomeContent";
 import NotFound from "./NotFound";
 
 const VlogDetail = () => {
   const { slug } = useParams();
   const { data: vlog, isLoading } = useVlog(slug);
+  const { data: homeContent } = useHomeContent();
+  const vlogsVisible = homeContent?.visibility?.vlogs ?? true;
+
+  if (homeContent && !vlogsVisible) {
+    return <NotFound />;
+  }
 
   if (isLoading) {
     return (
@@ -29,7 +36,7 @@ const VlogDetail = () => {
   return (
     <>
       <Helmet>
-        <title>{`${vlog.title} | EltraOverseas Vlogs`}</title>
+        <title>{`${vlog.title} | Eltra Overseas Vlogs`}</title>
         <meta name="description" content={vlog.summary} />
       </Helmet>
       <Navbar />
@@ -68,10 +75,6 @@ const VlogDetail = () => {
 
           <article className="mt-10 space-y-5 text-lg leading-relaxed text-muted-foreground">
             <p>{vlog.description}</p>
-            <p>
-              Looking for something specific? Reach out with grade, coating, or packaging requirements from the contact
-              section, and we can feature it in a future vlog.
-            </p>
           </article>
         </div>
       </main>

@@ -5,19 +5,25 @@ import Navbar from "@/components/sections/Navbar";
 import Footer from "@/components/sections/Footer";
 import { useVlogs } from "@/hooks/useVlogs";
 import { useHomeContent } from "@/hooks/useHomeContent";
+import NotFound from "./NotFound";
 
 const Vlogs = () => {
   const { data: vlogs, isLoading } = useVlogs();
   const { data: content } = useHomeContent();
   const header = content?.vlogsSection;
+  const vlogsVisible = content?.visibility?.vlogs ?? true;
+
+  if (content && !vlogsVisible) {
+    return <NotFound />;
+  }
 
   return (
     <>
       <Helmet>
-        <title>EltraOverseas Vlogs | Factory Tours & Logistics Stories</title>
+        <title>Eltra Overseas Vlogs | Factory Tours & Logistics Stories</title>
         <meta
           name="description"
-          content="Watch EltraOverseas fastener factory walkthroughs, QA demos, and global logistics stories captured in our vlogs."
+          content="Watch Eltra Overseas fastener factory walkthroughs, QA demos, and global logistics stories captured in our vlogs."
         />
       </Helmet>
       <Navbar />
@@ -28,7 +34,7 @@ const Vlogs = () => {
             {header?.eyebrow ?? "Vlogs"}
           </span>
           <h1 className="text-4xl md:text-5xl font-display mt-4">
-            {header?.title ?? "Behind The Scenes At EltraOverseas"}
+            {header?.title ?? "Behind The Scenes At Eltra Overseas"}
           </h1>
           <p className="text-muted-foreground mt-4">
             {header?.description ?? "Monthly episodes that unpack machining cells, QC labs, and global logistics."}

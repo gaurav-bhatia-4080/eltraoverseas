@@ -1,4 +1,5 @@
 import { Hexagon, Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
+import GoogleTranslate from "@/components/GoogleTranslate";
 import { useHomeContent } from "@/hooks/useHomeContent";
 
 const iconMap = {
@@ -33,30 +34,34 @@ const Footer = () => {
             <a href="#" className="flex items-center gap-2 mb-6">
               <Hexagon className="w-8 h-8 text-accent" />
               <span className="font-display font-bold text-2xl text-primary-foreground">
-                {content?.branding?.brandName ?? "EltraOverseas"}
-                <span className="text-accent">.</span>
+                {content?.branding?.brandName ?? "Eltra Overseas"}
               </span>
             </a>
             <p className="text-primary-foreground/60 leading-relaxed mb-6 max-w-sm">
               {footer.description}
             </p>
-            
+
             {/* Social Links */}
             <div className="flex gap-4">
-              {footer.socialLinks.map((link) => {
-                const Icon = iconMap[link.icon as keyof typeof iconMap] ?? Facebook;
-                return (
-                  <a
-                    key={link.icon}
-                    href={link.url}
-                    className="w-10 h-10 rounded-lg bg-primary-foreground/10 flex items-center justify-center hover:bg-accent/20 transition-colors group"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <Icon className="w-5 h-5 text-primary-foreground/60 group-hover:text-accent transition-colors" />
-                  </a>
-                );
-              })}
+              {footer.socialLinks
+                .filter((link) => ["instagram", "youtube", "linkedin"].includes(link.icon))
+                .map((link) => {
+                  const Icon = iconMap[link.icon as keyof typeof iconMap] ?? Facebook;
+                  return (
+                    <a
+                      key={link.icon}
+                      href={link.url}
+                      className="w-10 h-10 rounded-lg bg-primary-foreground/10 flex items-center justify-center hover:bg-accent/20 transition-colors group"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <Icon className="w-5 h-5 text-primary-foreground/60 group-hover:text-accent transition-colors" />
+                    </a>
+                  );
+                })}
+            </div>
+            <div className="mt-6">
+              <GoogleTranslate />
             </div>
           </div>
 
@@ -82,9 +87,7 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-8">
-          <p className="text-primary-foreground/40 text-sm">
-            {footer.copyright}
-          </p>
+          <p className="text-primary-foreground/40 text-sm">{footer.copyright}</p>
           <div className="flex gap-6">
             {footer.legalLinks.map((link) => (
               <a key={link.name} href={link.href} className="text-primary-foreground/40 hover:text-accent text-sm transition-colors">

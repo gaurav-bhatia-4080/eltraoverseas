@@ -29,7 +29,7 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>EltraOverseas - Premium Industrial Fasteners | Global Import Export</title>
+        <title>Eltra Overseas - Premium Industrial Fasteners | Global Import Export</title>
         <meta
           name="description"
           content="Leading manufacturer and exporter of precision industrial fasteners - screws, nuts, bolts, and custom hardware. ISO certified quality. 50+ countries served."
@@ -40,8 +40,8 @@ const Index = () => {
       <main className="overflow-x-hidden">
         <Navbar />
         <HeroSection />
-        <ProductsSection />
         <FeaturesSection />
+        <ProductsSection />
         <StatsSection />
         <TestimonialsSection />
         <VlogsSection />

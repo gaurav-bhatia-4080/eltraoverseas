@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Hexagon } from "lucide-react";
 import { useHomeContent } from "@/hooks/useHomeContent";
@@ -10,16 +10,51 @@ type NavLink =
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
+  const location = useLocation();
   const { data: content } = useHomeContent();
 
+  const showVlogs = content?.visibility?.vlogs ?? true;
+  const showTestimonials = content?.visibility?.testimonials ?? true;
+
   const navLinks: NavLink[] = [
-    { name: "Products", type: "section", hash: "products" },
     { name: "About", type: "section", hash: "about" },
+    { name: "Products", type: "section", hash: "products" },
     { name: "Global Reach", type: "section", hash: "stats" },
-    { name: "Testimonials", type: "section", hash: "testimonials" },
-    { name: "Vlogs", type: "page", path: "/vlogs" },
-    { name: "Contact", type: "page", path: "/contact" },
+    { name: "Certificates", type: "page", path: "/certificates" },
+    ...(showTestimonials ? [{ name: "Testimonials", type: "section", hash: "testimonials" }] : []),
+    ...(showVlogs ? [{ name: "Vlogs", type: "page", path: "/vlogs" }] : []),
+    { name: "Contact", type: "section", hash: "contact" },
   ];
+
+  useEffect(() => {
+    if (location.pathname !== "/") {
+      setActiveSection("");
+      return;
+    }
+
+    const sectionIds = ["about", "products", "stats", "testimonials", "contact"];
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      { threshold: 0.4 },
+    );
+
+    const elements = sectionIds
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => Boolean(el));
+
+    elements.forEach((el) => observer.observe(el));
+
+    return () => {
+      elements.forEach((el) => observer.unobserve(el));
+    };
+  }, [location.pathname]);
 
   const getLinkTarget = (link: NavLink) => {
     if (link.type === "section") {
@@ -27,6 +62,15 @@ const Navbar = () => {
     }
     return link.path;
   };
+
+  const linkIsActive = (link: NavLink) => {
+    if (link.type === "section") {
+      return location.pathname === "/" && activeSection === link.hash;
+    }
+    return location.pathname === link.path;
+  };
+
+  const linkBaseClass = "nav-link group";
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
@@ -36,28 +80,34 @@ const Navbar = () => {
           <Link to="/" className="flex items-center gap-2 group">
             <Hexagon className="w-8 h-8 text-accent transition-transform group-hover:rotate-90 duration-500" />
             <span className="font-display font-bold text-xl text-foreground">
-              {content?.branding?.brandName ?? "EltraOverseas"}
-              <span className="text-accent">.</span>
+              {content?.branding?.brandName ?? "Eltra Overseas"}
             </span>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                to={getLinkTarget(link)}
-                className="text-muted-foreground hover:text-foreground transition-colors font-medium text-sm"
-              >
-                {link.name}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = linkIsActive(link);
+              return (
+                <Link
+                  key={link.name}
+                  to={getLinkTarget(link)}
+                  className={`${linkBaseClass} ${
+                    isActive ? "text-foreground nav-link--active" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <span className="px-1">{link.name}</span>
+                </Link>
+              );
+            })}
           </div>
 
           {/* CTA Button */}
-          <div className="hidden md:block">
+          <div className="hidden md:flex items-center gap-3">
             <Button variant="accent" size="lg" asChild>
-              <Link to="/contact">Get Quote</Link>
+              <a href={content?.resources?.catalogUrl || "#"} target="_blank" rel="noreferrer" download>
+                Product Catalog
+              </a>
             </Button>
           </div>
 
@@ -83,17 +133,27 @@ const Navbar = () => {
                 <Link
                   key={link.name}
                   to={getLinkTarget(link)}
-                  className="text-muted-foreground hover:text-foreground transition-colors font-medium px-2 py-2"
+                  className={`px-2 py-2 text-base font-bold ${
+                    linkIsActive(link) ? "text-foreground" : "text-muted-foreground"
+                  }`}
                   onClick={() => setIsOpen(false)}
                 >
                   {link.name}
                 </Link>
               ))}
-              <Button variant="accent" className="mt-2" asChild>
-                <Link to="/contact" onClick={() => setIsOpen(false)}>
-                  Get Quote
-                </Link>
-              </Button>
+              <div className="flex items-center gap-3 py-2">
+                <Button variant="accent" className="mt-2" asChild>
+                  <a
+                    href={content?.resources?.catalogUrl || "#"}
+                    target="_blank"
+                    rel="noreferrer"
+                    download
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Product Catalog
+                  </a>
+                </Button>
+              </div>
             </div>
           </div>
         )}
