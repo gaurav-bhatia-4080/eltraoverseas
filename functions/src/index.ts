@@ -1,46 +1,55 @@
-import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
-import nodemailer from "nodemailer";
+import { initializeApp } from "firebase-admin/app";
+import { onDocumentCreated } from "firebase-functions/v2/firestore";
+import { defineString } from "firebase-functions/params";
+import { logger } from "firebase-functions";
+import nodemailer = require("nodemailer");
 
-admin.initializeApp();
+initializeApp();
 
-const mailConfig = functions.config().mail || {};
+const mailUser = defineString("mail.user");
+const mailPass = defineString("mail.pass");
+const mailTo = defineString("mail.to");
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: mailConfig.user,
-    pass: mailConfig.pass,
+export const notifyContact = onDocumentCreated(
+  {
+    region: "asia-south1",
+    document: "contactSubmissions/{submissionId}",
   },
-});
+  async (event) => {
+    const data = event.data?.data() ?? {};
 
-export const notifyContact = functions
-  .region("asia-south1")
-  .firestore.document("contactSubmissions/{submissionId}")
-  .onCreate(async (snapshot) => {
-    const data = snapshot.data();
+    const name = (data.name as string) || "Unknown";
+    const email = (data.email as string) || "-";
+    const company = (data.company as string) || "-";
+    const country = (data.country as string) || "-";
+    const phone = (data.phone as string) || "-";
+    const message = (data.message as string) || "(no message provided)";
 
-    const name = data.name || "Unknown";
-    const email = data.email || "-";
-    const company = data.company || "-";
-    const country = data.country || "-";
-    const phone = data.phone || "-";
-    const message = data.message || "(no message provided)";
+    const user = mailUser.value();
+    const pass = mailPass.value();
+    const toAddress = mailTo.value() || user;
 
-    const text = `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nCompany: ${company}\nCountry: ${country}\nMessage: ${message}`;
-
-    const toAddress = mailConfig.to || mailConfig.user;
-
-    if (!mailConfig.user || !mailConfig.pass || !toAddress) {
-      functions.logger.error("Mail config missing; cannot send contact notification");
+    if (!user || !pass || !toAddress) {
+      logger.error("Mail config missing; cannot send contact notification");
       return;
     }
 
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user,
+        pass,
+      },
+    });
+
+    const text = `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nCompany: ${company}\nCountry: ${country}\nMessage: ${message}`;
+
     await transporter.sendMail({
-      from: `Eltra Overseas <${mailConfig.user}>`,
+      from: `Eltra Overseas <${user}>`,
       to: toAddress,
       replyTo: email,
       subject: `New enquiry from ${name}`,
       text,
     });
-  });
+  },
+);

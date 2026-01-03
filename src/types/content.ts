@@ -102,6 +102,20 @@ export type ContactSectionContent = {
   };
 };
 
+export type ContactSubmissionStatus = "new" | "in_progress" | "processed";
+
+export type ContactSubmission = {
+  id: string;
+  name: string;
+  email: string;
+  company: string;
+  country: string;
+  phone?: string;
+  message: string;
+  status: ContactSubmissionStatus;
+  createdAt?: string | null;
+};
+
 export type ResourceSettings = {
   catalogUrl: string;
 };

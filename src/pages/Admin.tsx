@@ -1,13 +1,23 @@
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { doc, setDoc, deleteDoc } from "firebase/firestore";
+import { doc, setDoc, deleteDoc, updateDoc } from "firebase/firestore";
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { useHomeContent } from "@/hooks/useHomeContent";
 import { useProducts } from "@/hooks/useProducts";
 import { useVlogs } from "@/hooks/useVlogs";
+import { useContactSubmissions } from "@/hooks/useContactSubmissions";
 import { auth, db } from "@/lib/firebase";
-import { HeroContent, ContactSectionContent, Product, Vlog, Certificate, ResourceSettings } from "@/types/content";
+import {
+  HeroContent,
+  ContactSectionContent,
+  Product,
+  Vlog,
+  Certificate,
+  ResourceSettings,
+  ContactSubmission,
+  ContactSubmissionStatus,
+} from "@/types/content";
 import Navbar from "@/components/sections/Navbar";
 import Footer from "@/components/sections/Footer";
 import { Button } from "@/components/ui/button";
@@ -40,6 +50,7 @@ const Admin = () => {
   const { data: homeContent, isLoading: loadingHome } = useHomeContent();
   const { data: products, isLoading: loadingProducts } = useProducts();
   const { data: vlogs, isLoading: loadingVlogs } = useVlogs();
+  const { data: contactSubmissions, isLoading: loadingSubmissions } = useContactSubmissions();
 
   const [heroForm, setHeroForm] = useState<HeroContent | null>(null);
   const [contactForm, setContactForm] = useState<ContactSectionContent | null>(null);
@@ -76,6 +87,8 @@ const Admin = () => {
     { name: "Terms of Service", href: "" },
   ]);
   const [savingSocialLinks, setSavingSocialLinks] = useState(false);
+  const [updatingSubmissionId, setUpdatingSubmissionId] = useState<string | null>(null);
+  const [deletingSubmissionId, setDeletingSubmissionId] = useState<string | null>(null);
 
   const updateContactFormField = (key: keyof typeof contactFormDefaults, value: string) => {
     if (!contactForm) return;
@@ -306,6 +319,20 @@ const Admin = () => {
     await queryClient.invalidateQueries({ queryKey: ["home-content"] });
   };
 
+  const updateSubmissionStatus = async (submissionId: string, status: ContactSubmissionStatus) => {
+    setUpdatingSubmissionId(submissionId);
+    await updateDoc(doc(db, "contactSubmissions", submissionId), { status });
+    setUpdatingSubmissionId(null);
+    await queryClient.invalidateQueries({ queryKey: ["contact-submissions"] });
+  };
+
+  const deleteSubmission = async (submissionId: string) => {
+    setDeletingSubmissionId(submissionId);
+    await deleteDoc(doc(db, "contactSubmissions", submissionId));
+    setDeletingSubmissionId(null);
+    await queryClient.invalidateQueries({ queryKey: ["contact-submissions"] });
+  };
+
   if (!user) {
     return (
       <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-steel px-4">
@@ -359,12 +386,14 @@ const Admin = () => {
     loadingHome ||
     loadingProducts ||
     loadingVlogs ||
+    loadingSubmissions ||
     !heroForm ||
     !contactForm ||
     !productForm ||
     !vlogForm ||
     !testimonialsForm ||
-    !visibility;
+    !visibility ||
+    !contactSubmissions;
 
   if (dataLoading) {
     return (
@@ -376,6 +405,19 @@ const Admin = () => {
       </main>
     );
   }
+
+  const statusStyles: Record<ContactSubmissionStatus, { label: string; className: string }> = {
+    new: { label: "New", className: "bg-amber-100 text-amber-800" },
+    in_progress: { label: "In progress", className: "bg-sky-100 text-sky-800" },
+    processed: { label: "Processed", className: "bg-emerald-100 text-emerald-800" },
+  };
+
+  const formatDate = (value?: string | null) => {
+    if (!value) return "—";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return value;
+    return date.toLocaleString();
+  };
 
   return (
     <>
@@ -394,6 +436,106 @@ const Admin = () => {
               Sign out
             </Button>
           </div>
+
+          <section className="card-industrial p-8 space-y-6">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Contact enquiries</p>
+                <h2 className="text-2xl font-display">Lead Inbox</h2>
+              </div>
+              <div className="text-sm text-muted-foreground">{contactSubmissions?.length ?? 0} records</div>
+            </div>
+            {contactSubmissions && contactSubmissions.length > 0 ? (
+              <div className="space-y-4">
+                {contactSubmissions.map((submission) => (
+                  <div key={submission.id} className="border rounded-xl p-4 space-y-3">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                      <div>
+                        <p className="font-semibold text-lg">{submission.name}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Received {formatDate(submission.createdAt)}
+                        </p>
+                      </div>
+                      <span
+                        className={`inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full ${
+                          statusStyles[submission.status].className
+                        }`}
+                      >
+                        {statusStyles[submission.status].label}
+                      </span>
+                    </div>
+                    <div className="grid md:grid-cols-3 gap-3 text-sm">
+                      <div>
+                        <p className="text-muted-foreground">Email</p>
+                        <p className="font-medium">{submission.email}</p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">Company</p>
+                        <p className="font-medium">{submission.company}</p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">Country</p>
+                        <p className="font-medium">{submission.country}</p>
+                      </div>
+                    </div>
+                    <div className="grid md:grid-cols-3 gap-3 text-sm">
+                      <div>
+                        <p className="text-muted-foreground">Phone</p>
+                        <p className="font-medium">{submission.phone || "—"}</p>
+                      </div>
+                      <div className="md:col-span-2">
+                        <p className="text-muted-foreground">Message</p>
+                        <p className="font-medium whitespace-pre-line">{submission.message}</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                      {submission.status !== "new" && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => updateSubmissionStatus(submission.id, "new")}
+                          disabled={updatingSubmissionId === submission.id}
+                        >
+                          Mark as New
+                        </Button>
+                      )}
+                      {submission.status !== "in_progress" && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => updateSubmissionStatus(submission.id, "in_progress")}
+                          disabled={updatingSubmissionId === submission.id}
+                        >
+                          Mark In Progress
+                        </Button>
+                      )}
+                      {submission.status !== "processed" && (
+                        <Button
+                          size="sm"
+                          onClick={() => updateSubmissionStatus(submission.id, "processed")}
+                          disabled={updatingSubmissionId === submission.id}
+                        >
+                          Mark Processed
+                        </Button>
+                      )}
+                      {submission.status === "processed" && (
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => deleteSubmission(submission.id)}
+                          disabled={deletingSubmissionId === submission.id}
+                        >
+                          Delete lead
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">No enquiries yet.</p>
+            )}
+          </section>
 
           <section className="card-industrial p-6">
             <div className="flex items-center justify-between flex-wrap gap-6">
