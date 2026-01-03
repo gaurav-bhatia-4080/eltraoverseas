@@ -111,6 +111,8 @@ export type ContactSubmission = {
   company: string;
   country: string;
   phone?: string;
+  phoneCountryIso?: string;
+  phoneCountryCode?: string;
   message: string;
   status: ContactSubmissionStatus;
   createdAt?: string | null;

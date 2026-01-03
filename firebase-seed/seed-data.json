@@ -282,6 +282,8 @@
       "company": "Demo Industries",
       "country": "India",
       "phone": "+91 98765 43210",
+      "phoneCountryIso": "IN",
+      "phoneCountryCode": "+91",
       "message": "Interested in M16 bolts for automotive program.",
       "status": "new",
       "createdAt": "2024-01-01T00:00:00.000Z"

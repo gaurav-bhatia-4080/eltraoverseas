@@ -10,12 +10,14 @@ import { useToast } from "@/components/ui/use-toast";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
 import { useHomeContent } from "@/hooks/useHomeContent";
 import { db } from "@/lib/firebase";
+import { phoneCountries } from "@/data/phoneCountries";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.string().email("Enter a valid email"),
   company: z.string().min(2, "Company is required"),
   country: z.string().min(2, "Country is required"),
+  phoneCountryIso: z.string().min(1, "Select country code"),
   phone: z.string().optional(),
   message: z.string().min(10, "Tell us a little more about your requirement"),
 });
@@ -41,15 +43,25 @@ const ContactSection = () => {
       email: "",
       company: "",
       country: "",
+      phoneCountryIso: "IN",
       phone: "",
       message: "",
     },
   });
 
+  const phoneCountryIso = form.watch("phoneCountryIso") || "IN";
+  const selectedPhoneCountry =
+    phoneCountries.find((entry) => entry.iso === phoneCountryIso) ||
+    phoneCountries.find((entry) => entry.iso === "IN") ||
+    phoneCountries[0];
+
   const onSubmit = async (values: ContactFormValues) => {
     try {
+      const selectedCountry = phoneCountries.find((entry) => entry.iso === values.phoneCountryIso);
       await addDoc(collection(db, "contactSubmissions"), {
         ...values,
+        phoneCountryIso: selectedCountry?.iso ?? values.phoneCountryIso,
+        phoneCountryCode: selectedCountry?.dialCode ?? "",
         status: "new",
         createdAt: serverTimestamp(),
       });
@@ -150,21 +162,20 @@ const ContactSection = () => {
                   />
                 </div>
 
-                <FormField
-                  control={form.control}
-                  name="company"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Company</FormLabel>
-                      <FormControl>
-                        <Input placeholder={formContent.companyPlaceholder} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
                 <div className="grid md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="company"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Company</FormLabel>
+                        <FormControl>
+                          <Input placeholder={formContent.companyPlaceholder} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
                     control={form.control}
                     name="country"
@@ -178,6 +189,31 @@ const ContactSection = () => {
                       </FormItem>
                     )}
                   />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="phoneCountryIso"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Country Code</FormLabel>
+                        <FormControl>
+                          <select
+                            className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                            {...field}
+                          >
+                            {phoneCountries.map((country) => (
+                              <option key={country.iso} value={country.iso}>
+                                {country.name} ({country.dialCode})
+                              </option>
+                            ))}
+                          </select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
                     control={form.control}
                     name="phone"
@@ -185,7 +221,12 @@ const ContactSection = () => {
                       <FormItem>
                         <FormLabel>Phone (optional)</FormLabel>
                         <FormControl>
-                          <Input placeholder="+91 98765 43210" {...field} />
+                          <div className="flex">
+                            <span className="inline-flex items-center rounded-l-lg border border-r-0 bg-muted px-3 text-sm font-medium text-muted-foreground">
+                              {selectedPhoneCountry?.dialCode ?? "+"}
+                            </span>
+                            <Input className="rounded-l-none" placeholder="98765 43210" {...field} />
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>

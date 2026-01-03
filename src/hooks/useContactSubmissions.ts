@@ -17,6 +17,8 @@ const normalizeSubmission = (docId: string, data: Record<string, any>): ContactS
     company: data.company ?? "",
     country: data.country ?? "",
     phone: data.phone ?? "",
+    phoneCountryIso: data.phoneCountryIso ?? "",
+    phoneCountryCode: data.phoneCountryCode ?? "",
     message: data.message ?? "",
     status: data.status ?? "new",
     createdAt,

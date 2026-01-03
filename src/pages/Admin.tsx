@@ -419,6 +419,11 @@ const Admin = () => {
     return date.toLocaleString();
   };
 
+  const formatPhone = (submission: ContactSubmission) => {
+    if (!submission.phone) return "—";
+    return `${submission.phoneCountryCode ?? ""} ${submission.phone}`.trim();
+  };
+
   return (
     <>
       <Helmet>
@@ -481,7 +486,7 @@ const Admin = () => {
                     <div className="grid md:grid-cols-3 gap-3 text-sm">
                       <div>
                         <p className="text-muted-foreground">Phone</p>
-                        <p className="font-medium">{submission.phone || "—"}</p>
+                        <p className="font-medium">{formatPhone(submission)}</p>
                       </div>
                       <div className="md:col-span-2">
                         <p className="text-muted-foreground">Message</p>

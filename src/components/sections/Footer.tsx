@@ -1,7 +1,7 @@
 import { Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
-import GoogleTranslate from "@/components/GoogleTranslate";
 import { useHomeContent } from "@/hooks/useHomeContent";
 import EltraLogo from "@/components/EltraLogo";
+import GoogleTranslate from "@/components/GoogleTranslate";
 
 const iconMap = {
   facebook: Facebook,
