@@ -1,6 +1,7 @@
-import { Hexagon, Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
+import { Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
 import GoogleTranslate from "@/components/GoogleTranslate";
 import { useHomeContent } from "@/hooks/useHomeContent";
+import EltraLogo from "@/components/EltraLogo";
 
 const iconMap = {
   facebook: Facebook,
@@ -32,7 +33,7 @@ const Footer = () => {
           {/* Brand Column */}
           <div className="lg:col-span-2">
             <a href="#" className="flex items-center gap-2 mb-6">
-              <Hexagon className="w-8 h-8 text-accent" />
+              <EltraLogo className="w-12 h-12" />
               <span className="font-display font-bold text-2xl text-primary-foreground">
                 {content?.branding?.brandName ?? "Eltra Overseas"}
               </span>

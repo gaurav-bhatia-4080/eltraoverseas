@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -8,11 +9,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
 import { useHomeContent } from "@/hooks/useHomeContent";
+import { db } from "@/lib/firebase";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.string().email("Enter a valid email"),
   company: z.string().min(2, "Company is required"),
+  country: z.string().min(2, "Country is required"),
+  phone: z.string().optional(),
   message: z.string().min(10, "Tell us a little more about your requirement"),
 });
 
@@ -37,17 +41,31 @@ const ContactSection = () => {
       email: "",
       company: "",
       country: "",
+      phone: "",
       message: "",
     },
   });
 
   const onSubmit = async (values: ContactFormValues) => {
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    toast({
-      title: "Enquiry received",
-      description: `Thanks ${values.name}, our sales desk will respond shortly.`,
-    });
-    form.reset();
+    try {
+      await addDoc(collection(db, "contactSubmissions"), {
+        ...values,
+        status: "new",
+        createdAt: serverTimestamp(),
+      });
+      toast({
+        title: "Enquiry received",
+        description: `Thanks ${values.name}, our sales desk will respond shortly.`,
+      });
+      form.reset();
+    } catch (error) {
+      console.error("Failed to submit contact form", error);
+      toast({
+        title: "Submission failed",
+        description: "Please try again in a moment or email us directly.",
+        variant: "destructive",
+      });
+    }
   };
 
   if (isLoading) {
@@ -146,19 +164,34 @@ const ContactSection = () => {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="country"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Country</FormLabel>
-                      <FormControl>
-                        <Input placeholder={formContent.countryPlaceholder} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="grid md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="country"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Country</FormLabel>
+                        <FormControl>
+                          <Input placeholder={formContent.countryPlaceholder} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone (optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="+91 98765 43210" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
                 <FormField
                   control={form.control}

@@ -274,5 +274,17 @@
       "publishedOn": "Dec 12, 2023",
       "tags": ["Logistics", "Operations"]
     }
+  },
+  "contactSubmissions": {
+    "seed-example": {
+      "name": "Sample Buyer",
+      "email": "buyer@example.com",
+      "company": "Demo Industries",
+      "country": "India",
+      "phone": "+91 98765 43210",
+      "message": "Interested in M16 bolts for automotive program.",
+      "status": "new",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    }
   }
 }

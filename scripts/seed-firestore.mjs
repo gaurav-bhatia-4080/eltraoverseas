@@ -45,6 +45,7 @@ async function main() {
   await seedSiteContent(db, seed.siteContent);
   await seedCollection(db, "products", seed.products);
   await seedCollection(db, "vlogs", seed.vlogs);
+  await seedCollection(db, "contactSubmissions", seed.contactSubmissions);
 
   console.log("🎉 Firestore seed complete");
 }

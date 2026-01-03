@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Hexagon } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useHomeContent } from "@/hooks/useHomeContent";
+import EltraLogo from "@/components/EltraLogo";
 
 type NavLink =
   | { name: string; type: "section"; hash: string }
@@ -78,7 +79,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <Hexagon className="w-8 h-8 text-accent transition-transform group-hover:rotate-90 duration-500" />
+            <EltraLogo className="w-10 h-10 transition-transform group-hover:scale-105 duration-500" />
             <span className="font-display font-bold text-xl text-foreground">
               {content?.branding?.brandName ?? "Eltra Overseas"}
             </span>
