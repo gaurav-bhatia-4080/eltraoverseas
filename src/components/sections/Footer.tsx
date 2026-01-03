@@ -32,8 +32,8 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 pb-12 border-b border-primary-foreground/10">
           {/* Brand Column */}
           <div className="lg:col-span-2">
-            <a href="#" className="flex items-center gap-2 mb-6">
-              <EltraLogo className="w-12 h-12" />
+            <a href="#" className="flex items-center gap-3 mb-6">
+              <EltraLogo className="w-24 h-24" />
               <span className="font-display font-bold text-2xl text-primary-foreground">
                 {content?.branding?.brandName ?? "Eltra Overseas"}
               </span>

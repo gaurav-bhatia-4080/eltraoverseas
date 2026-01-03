@@ -17,6 +17,7 @@ import {
   ResourceSettings,
   ContactSubmission,
   ContactSubmissionStatus,
+  GalleryImage,
 } from "@/types/content";
 import Navbar from "@/components/sections/Navbar";
 import Footer from "@/components/sections/Footer";
@@ -24,6 +25,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+
+type VisibilitySettings = {
+  vlogs: boolean;
+  testimonials: boolean;
+  gallery: boolean;
+  certificates: boolean;
+  stats: boolean;
+  products: boolean;
+};
 
 const parseList = (value: string) =>
   value
@@ -68,12 +78,14 @@ const Admin = () => {
   const [isCreatingVlog, setIsCreatingVlog] = useState(false);
   const [testimonialsForm, setTestimonialsForm] = useState(homeContent?.testimonialsSection ?? null);
   const [savingTestimonials, setSavingTestimonials] = useState(false);
-  const [visibility, setVisibility] = useState<{ vlogs: boolean; testimonials: boolean } | null>(null);
+  const [visibility, setVisibility] = useState<VisibilitySettings | null>(null);
   const [savingVisibility, setSavingVisibility] = useState(false);
   const [resources, setResources] = useState<ResourceSettings>({ catalogUrl: "" });
   const [savingResources, setSavingResources] = useState(false);
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [savingCertificates, setSavingCertificates] = useState(false);
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
+  const [savingGallery, setSavingGallery] = useState(false);
   const defaultSocialIcons = [
     { icon: "instagram", label: "Instagram" },
     { icon: "youtube", label: "YouTube" },
@@ -131,6 +143,16 @@ const Admin = () => {
     } else {
       setCertificates([]);
     }
+    if (homeContent?.gallery) {
+      setGalleryImages(
+        homeContent.gallery.map((image, index) => ({
+          ...image,
+          id: image.id || `gallery-${index}`,
+        })),
+      );
+    } else {
+      setGalleryImages([]);
+    }
     if (homeContent?.footer?.socialLinks) {
       setSocialLinks(
         defaultSocialIcons.map((item) => ({
@@ -146,7 +168,10 @@ const Admin = () => {
     if (homeContent) {
       setVisibility({
         vlogs: homeContent.visibility?.vlogs ?? true,
-        testimonials: homeContent.visibility?.testimonials ?? true,
+        gallery: homeContent.visibility?.gallery ?? true,
+        certificates: homeContent.visibility?.certificates ?? true,
+        stats: homeContent.visibility?.stats ?? true,
+        products: homeContent.visibility?.products ?? true,
       });
     }
   }, [homeContent]);
@@ -199,6 +224,31 @@ const Admin = () => {
       publishedOn: "",
       tags: [],
     } satisfies Vlog);
+
+  const updateHeroImageUrl = (index: number, value: string) => {
+    setHeroForm((prev) => {
+      if (!prev) return prev;
+      const nextImages = [...(prev.imageUrls ?? [])];
+      nextImages[index] = value;
+      return { ...prev, imageUrls: nextImages };
+    });
+  };
+
+  const addHeroImageUrl = () => {
+    setHeroForm((prev) => {
+      if (!prev) return prev;
+      const nextImages = [...(prev.imageUrls ?? []), ""];
+      return { ...prev, imageUrls: nextImages };
+    });
+  };
+
+  const removeHeroImageUrl = (index: number) => {
+    setHeroForm((prev) => {
+      if (!prev) return prev;
+      const nextImages = [...(prev.imageUrls ?? [])].filter((_, i) => i !== index);
+      return { ...prev, imageUrls: nextImages };
+    });
+  };
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -316,6 +366,13 @@ const Admin = () => {
       { merge: true },
     );
     setSavingSocialLinks(false);
+    await queryClient.invalidateQueries({ queryKey: ["home-content"] });
+  };
+
+  const saveGallery = async () => {
+    setSavingGallery(true);
+    await setDoc(doc(db, "siteContent", "home"), { gallery: galleryImages }, { merge: true });
+    setSavingGallery(false);
     await queryClient.invalidateQueries({ queryKey: ["home-content"] });
   };
 
@@ -442,7 +499,8 @@ const Admin = () => {
             </Button>
           </div>
 
-          <section className="card-industrial p-8 space-y-6">
+          {visibility!.products && (
+            <section className="card-industrial p-8 space-y-6">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
                 <p className="text-sm text-muted-foreground">Contact enquiries</p>
@@ -540,9 +598,10 @@ const Admin = () => {
             ) : (
               <p className="text-sm text-muted-foreground">No enquiries yet.</p>
             )}
-          </section>
+            </section>
+          )}
 
-          <section className="card-industrial p-6">
+          <section className="card-industrial p-6 space-y-4">
             <div className="flex items-center justify-between flex-wrap gap-6">
               <div>
                 <p className="text-sm text-muted-foreground">Sections</p>
@@ -551,25 +610,46 @@ const Admin = () => {
                   Toggle sections on or off across the site and navigation.
                 </p>
               </div>
-              <div className="flex flex-col sm:flex-row gap-6">
-                <label className="flex items-center gap-3 text-sm font-medium">
-                  <Switch
-                    checked={visibility!.vlogs}
-                    onCheckedChange={(checked) => setVisibility((prev) => (prev ? { ...prev, vlogs: checked } : prev))}
-                  />
-                  Show Vlogs
-                </label>
-                <label className="flex items-center gap-3 text-sm font-medium">
-                  <Switch
-                    checked={visibility!.testimonials}
-                    onCheckedChange={(checked) => setVisibility((prev) => (prev ? { ...prev, testimonials: checked } : prev))}
-                  />
-                  Show Testimonials
-                </label>
-                <Button onClick={saveVisibility} disabled={savingVisibility}>
-                  {savingVisibility ? "Saving..." : "Save visibility"}
-                </Button>
-              </div>
+              <Button onClick={saveVisibility} disabled={savingVisibility}>
+                {savingVisibility ? "Saving..." : "Save visibility"}
+              </Button>
+            </div>
+            <div className="grid md:grid-cols-3 gap-4 text-sm font-medium">
+              <label className="flex items-center gap-3">
+                <Switch
+                  checked={visibility!.products}
+                  onCheckedChange={(checked) => setVisibility((prev) => (prev ? { ...prev, products: checked } : prev))}
+                />
+                Show Products
+              </label>
+              <label className="flex items-center gap-3">
+                <Switch
+                  checked={visibility!.stats}
+                  onCheckedChange={(checked) => setVisibility((prev) => (prev ? { ...prev, stats: checked } : prev))}
+                />
+                Show Global Reach
+              </label>
+              <label className="flex items-center gap-3">
+                <Switch
+                  checked={visibility!.certificates}
+                  onCheckedChange={(checked) => setVisibility((prev) => (prev ? { ...prev, certificates: checked } : prev))}
+                />
+                Show Certificates
+              </label>
+              <label className="flex items-center gap-3">
+                <Switch
+                  checked={visibility!.gallery}
+                  onCheckedChange={(checked) => setVisibility((prev) => (prev ? { ...prev, gallery: checked } : prev))}
+                />
+                Show Gallery
+              </label>
+              <label className="flex items-center gap-3">
+                <Switch
+                  checked={visibility!.vlogs}
+                  onCheckedChange={(checked) => setVisibility((prev) => (prev ? { ...prev, vlogs: checked } : prev))}
+                />
+                Show Vlogs
+              </label>
             </div>
           </section>
 
@@ -632,6 +712,32 @@ const Admin = () => {
             <div>
               <label className="text-sm font-medium">Hero Image URL</label>
               <Input value={heroForm.heroImageUrl ?? ""} onChange={(event) => setHeroForm({ ...heroForm, heroImageUrl: event.target.value })} />
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">Carousel Images</label>
+                <Button type="button" variant="outline" size="sm" onClick={addHeroImageUrl}>
+                  Add image
+                </Button>
+              </div>
+              {heroForm.imageUrls && heroForm.imageUrls.length > 0 ? (
+                <div className="space-y-3">
+                  {heroForm.imageUrls.map((url, index) => (
+                    <div key={`hero-image-${index}`} className="flex gap-3">
+                      <Input
+                        value={url}
+                        onChange={(event) => updateHeroImageUrl(index, event.target.value)}
+                        placeholder="https://example.com/hero.jpg"
+                      />
+                      <Button type="button" variant="ghost" onClick={() => removeHeroImageUrl(index)}>
+                        Remove
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">No additional images added yet.</p>
+              )}
             </div>
           </section>
 
@@ -764,34 +870,35 @@ const Admin = () => {
             </div>
           </section>
 
-          <section className="card-industrial p-8 space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Catalog</p>
-                <h2 className="text-2xl font-display">Edit Product</h2>
-              </div>
-              <div className="flex gap-3">
-                {!isCreatingProduct && selectedProduct && (
-                  <Button variant="ghost" onClick={deleteProduct}>
-                    Delete
+          {visibility!.products && (
+            <section className="card-industrial p-8 space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Catalog</p>
+                  <h2 className="text-2xl font-display">Edit Product</h2>
+                </div>
+                <div className="flex gap-3">
+                  {!isCreatingProduct && selectedProduct && (
+                    <Button variant="ghost" onClick={deleteProduct}>
+                      Delete
+                    </Button>
+                  )}
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setIsCreatingProduct(true);
+                      setSelectedProduct("");
+                      setProductForm(initializeProductForm());
+                      setProductError(null);
+                    }}
+                  >
+                    New Product
                   </Button>
-                )}
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setIsCreatingProduct(true);
-                    setSelectedProduct("");
-                    setProductForm(initializeProductForm());
-                    setProductError(null);
-                  }}
-                >
-                  New Product
-                </Button>
-                <Button onClick={saveProduct} disabled={savingProduct}>
-                  {savingProduct ? "Saving..." : "Save product"}
-                </Button>
+                  <Button onClick={saveProduct} disabled={savingProduct}>
+                    {savingProduct ? "Saving..." : "Save product"}
+                  </Button>
+                </div>
               </div>
-            </div>
             {productError && <p className="text-destructive text-sm">{productError}</p>}
             <div className="grid md:grid-cols-4 gap-4">
               <div className="md:col-span-2">
@@ -859,7 +966,8 @@ const Admin = () => {
               <label className="text-sm font-medium">Certifications</label>
               <Textarea rows={2} value={(productForm.certifications ?? []).join(", ")} onChange={(event) => setProductForm({ ...productForm, certifications: parseList(event.target.value) })} />
             </div>
-          </section>
+            </section>
+          )}
 
           <section className="card-industrial p-8 space-y-6">
             <div className="flex items-center justify-between">
@@ -1065,6 +1173,63 @@ const Admin = () => {
                         }
                       />
                     </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="card-industrial p-8 space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Gallery</p>
+                <h2 className="text-2xl font-display">Image Library</h2>
+              </div>
+              <div className="flex gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setGalleryImages((prev) => [...prev, { id: `gallery-${Date.now()}`, imageUrl: "", caption: "" }])}
+                >
+                  Add image
+                </Button>
+                <Button onClick={saveGallery} disabled={savingGallery}>
+                  {savingGallery ? "Saving..." : "Save gallery"}
+                </Button>
+              </div>
+            </div>
+            <div className="grid md:grid-cols-2 gap-4">
+              {galleryImages.map((image, index) => (
+                <div key={image.id} className="border rounded-xl p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="font-semibold">Image #{index + 1}</p>
+                    <Button variant="ghost" size="sm" onClick={() => setGalleryImages((prev) => prev.filter((_, i) => i !== index))}>
+                      Remove
+                    </Button>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Image URL</label>
+                    <Input
+                      value={image.imageUrl}
+                      onChange={(event) => {
+                        const next = [...galleryImages];
+                        next[index] = { ...image, imageUrl: event.target.value };
+                        setGalleryImages(next);
+                      }}
+                      placeholder="https://example.com/gallery.jpg"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Caption (optional)</label>
+                    <Input
+                      value={image.caption ?? ""}
+                      onChange={(event) => {
+                        const next = [...galleryImages];
+                        next[index] = { ...image, caption: event.target.value };
+                        setGalleryImages(next);
+                      }}
+                      placeholder="Packaging line, April 2024"
+                    />
                   </div>
                 </div>
               ))}

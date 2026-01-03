@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Shield, Globe, Truck } from "lucide-react";
 import { useHomeContent } from "@/hooks/useHomeContent";
@@ -6,6 +7,27 @@ const HeroSection = () => {
   const { data: content, isLoading, error } = useHomeContent();
   const hero = content?.hero;
   const catalogUrl = content?.resources?.catalogUrl || "#";
+
+  const heroImages = useMemo(() => {
+    const images = hero?.imageUrls?.filter(Boolean) ?? [];
+    if (images.length > 0) {
+      return images;
+    }
+    if (hero?.heroImageUrl) {
+      return [hero.heroImageUrl];
+    }
+    return [];
+  }, [hero?.imageUrls, hero?.heroImageUrl]);
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    if (heroImages.length <= 1) return undefined;
+    const timer = window.setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, [heroImages.length]);
 
   if (isLoading) {
     return (
@@ -20,19 +42,27 @@ const HeroSection = () => {
   }
 
   return (
-    <section className="relative min-h-screen flex items-center bg-hero hex-pattern overflow-hidden">
-      {/* Background overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/80 to-transparent z-0" />
-      
-      {/* Hero Image */}
-      <div className="absolute right-0 top-0 w-1/2 h-full hidden lg:block">
-        <img
-          src={hero.heroImageUrl}
-          alt={hero.title}
-          className="w-full h-full object-cover opacity-60"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/50 to-transparent" />
+    <section className="relative min-h-screen flex items-center overflow-hidden">
+      <div className="absolute inset-0">
+        {heroImages.length > 0 ? (
+          heroImages.map((image, index) => (
+            <img
+              key={image + index}
+              src={image}
+              alt={hero.title}
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-out ${
+                index === currentSlide ? "opacity-80" : "opacity-0"
+              }`}
+              style={{ transitionDuration: "1500ms" }}
+              loading={index === 0 ? "eager" : "lazy"}
+            />
+          ))
+        ) : (
+          <div className="absolute inset-0 bg-hero" />
+        )}
       </div>
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/80 to-transparent" />
+      <div className="absolute inset-0 hex-pattern opacity-20" />
 
       <div className="container-custom relative z-10 pt-32 pb-20">
         <div className="max-w-3xl">

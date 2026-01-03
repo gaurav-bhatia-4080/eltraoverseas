@@ -12,7 +12,9 @@ import Contact from "./pages/Contact";
 import ProductDetail from "./pages/ProductDetail";
 import Certificates from "./pages/Certificates";
 import Admin from "./pages/Admin";
+import Gallery from "./pages/Gallery";
 import ScrollManager from "./components/ScrollManager";
+import FloatingWhatsApp from "./components/FloatingWhatsApp";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +26,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ScrollManager />
+          <FloatingWhatsApp />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/vlogs" element={<Vlogs />} />
@@ -31,6 +34,7 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/products/:slug" element={<ProductDetail />} />
             <Route path="/certificates" element={<Certificates />} />
+            <Route path="/gallery" element={<Gallery />} />
             <Route path="/admin" element={<Admin />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

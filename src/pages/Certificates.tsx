@@ -2,10 +2,16 @@ import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/sections/Navbar";
 import Footer from "@/components/sections/Footer";
 import { useHomeContent } from "@/hooks/useHomeContent";
+import NotFound from "./NotFound";
 
 const Certificates = () => {
   const { data: content, isLoading } = useHomeContent();
   const certificates = content?.certificates ?? [];
+  const certificatesVisible = content?.visibility?.certificates ?? true;
+
+  if (content && !certificatesVisible) {
+    return <NotFound />;
+  }
 
   return (
     <>

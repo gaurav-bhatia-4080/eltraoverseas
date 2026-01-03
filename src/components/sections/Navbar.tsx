@@ -16,14 +16,17 @@ const Navbar = () => {
   const { data: content } = useHomeContent();
 
   const showVlogs = content?.visibility?.vlogs ?? true;
-  const showTestimonials = content?.visibility?.testimonials ?? true;
+  const showProducts = content?.visibility?.products ?? true;
+  const showStats = content?.visibility?.stats ?? true;
+  const showGallery = content?.visibility?.gallery ?? true;
+  const showCertificates = content?.visibility?.certificates ?? true;
 
   const navLinks: NavLink[] = [
     { name: "About", type: "section", hash: "about" },
-    { name: "Products", type: "section", hash: "products" },
-    { name: "Global Reach", type: "section", hash: "stats" },
-    { name: "Certificates", type: "page", path: "/certificates" },
-    ...(showTestimonials ? [{ name: "Testimonials", type: "section", hash: "testimonials" }] : []),
+    ...(showProducts ? [{ name: "Products", type: "section", hash: "products" }] : []),
+    ...(showStats ? [{ name: "Global Reach", type: "section", hash: "stats" }] : []),
+    ...(showCertificates ? [{ name: "Certificates", type: "page", path: "/certificates" }] : []),
+    ...(showGallery ? [{ name: "Gallery", type: "page", path: "/gallery" }] : []),
     ...(showVlogs ? [{ name: "Vlogs", type: "page", path: "/vlogs" }] : []),
     { name: "Contact", type: "section", hash: "contact" },
   ];
@@ -34,7 +37,12 @@ const Navbar = () => {
       return;
     }
 
-    const sectionIds = ["about", "products", "stats", "testimonials", "contact"];
+    const sectionIds = [
+      "about",
+      ...(showProducts ? ["products"] : []),
+      ...(showStats ? ["stats"] : []),
+      "contact",
+    ];
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -55,7 +63,7 @@ const Navbar = () => {
     return () => {
       elements.forEach((el) => observer.unobserve(el));
     };
-  }, [location.pathname]);
+  }, [location.pathname, showProducts, showStats]);
 
   const getLinkTarget = (link: NavLink) => {
     if (link.type === "section") {
@@ -78,8 +86,8 @@ const Navbar = () => {
       <div className="container-custom">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <EltraLogo className="w-10 h-10 transition-transform group-hover:scale-105 duration-500" />
+          <Link to="/" className="flex items-center gap-3 group">
+            <EltraLogo className="w-16 h-16 transition-transform group-hover:scale-110 duration-500" />
             <span className="font-display font-bold text-xl text-foreground">
               {content?.branding?.brandName ?? "Eltra Overseas"}
             </span>

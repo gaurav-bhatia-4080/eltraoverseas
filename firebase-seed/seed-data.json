@@ -3,7 +3,10 @@
     "home": {
       "visibility": {
         "vlogs": true,
-        "testimonials": true
+        "gallery": true,
+        "certificates": true,
+        "stats": true,
+        "products": true
       },
       "resources": {
         "catalogUrl": "https://example.com/eltra-overseas-catalog.pdf"
@@ -19,7 +22,12 @@
         "description": "From high-tensile bolts to micro screws, we export premium industrial fasteners to 50+ countries. ISO certified quality, competitive pricing.",
         "primaryCtaLabel": "Explore Products",
         "secondaryCtaLabel": "Request Catalog",
-        "heroImageUrl": "https://i.ibb.co/mrZY2Lc3/download.jpg"
+        "heroImageUrl": "https://i.ibb.co/mrZY2Lc3/download.jpg",
+        "imageUrls": [
+          "https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?w=1600&auto=format&fit=crop&q=80",
+          "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1600&auto=format&fit=crop&q=80",
+          "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1600&auto=format&fit=crop&q=80"
+        ]
       },
       "productsSection": {
         "eyebrow": "Our Products",
@@ -159,6 +167,23 @@
           "title": "Export Excellence Award",
           "imageUrl": "https://images.unsplash.com/photo-1545239351-1141bd82e8a6?w=800&auto=format&fit=crop&q=80",
           "downloadUrl": "https://example.com/certificates/export-award.pdf"
+        }
+      ],
+      "gallery": [
+        {
+          "id": "gallery-1",
+          "imageUrl": "https://images.unsplash.com/photo-1477244075012-5cc28286e465?w=1200&auto=format&fit=crop&q=80",
+          "caption": "High-tensile bolts exiting the heat-treatment line"
+        },
+        {
+          "id": "gallery-2",
+          "imageUrl": "https://images.unsplash.com/photo-1489515217757-5fd1be406fef?w=1200&auto=format&fit=crop&q=80",
+          "caption": "Packing bay preparing export crates"
+        },
+        {
+          "id": "gallery-3",
+          "imageUrl": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1200&auto=format&fit=crop&q=80",
+          "caption": "Global logistics control tower"
         }
       ]
     }

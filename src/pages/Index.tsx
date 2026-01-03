@@ -10,9 +10,12 @@ import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import VlogsSection from "@/components/sections/VlogsSection";
 import ContactSection from "@/components/sections/ContactSection";
 import Footer from "@/components/sections/Footer";
+import { useHomeContent } from "@/hooks/useHomeContent";
 
 const Index = () => {
   const location = useLocation();
+  const { data: homeContent } = useHomeContent();
+  const visibility = homeContent?.visibility ?? {};
 
   useEffect(() => {
     if (location.hash) {
@@ -41,10 +44,10 @@ const Index = () => {
         <Navbar />
         <HeroSection />
         <FeaturesSection />
-        <ProductsSection />
-        <StatsSection />
-        <TestimonialsSection />
-        <VlogsSection />
+        {(visibility.products ?? true) && <ProductsSection />}
+        {(visibility.stats ?? true) && <StatsSection />}
+        {(visibility.testimonials ?? true) && <TestimonialsSection />}
+        {(visibility.vlogs ?? true) && <VlogsSection />}
         <ContactSection />
         <Footer />
       </main>

@@ -11,6 +11,7 @@ export type HeroContent = {
   primaryCtaLabel: string;
   secondaryCtaLabel: string;
   heroImageUrl: string;
+  imageUrls?: string[];
 };
 
 export type SectionHeader = {
@@ -118,6 +119,12 @@ export type ContactSubmission = {
   createdAt?: string | null;
 };
 
+export type GalleryImage = {
+  id: string;
+  imageUrl: string;
+  caption?: string;
+};
+
 export type ResourceSettings = {
   catalogUrl: string;
 };
@@ -141,10 +148,14 @@ export type HomeContent = {
   footer: FooterContent;
   visibility?: {
     vlogs?: boolean;
-    testimonials?: boolean;
+    gallery?: boolean;
+    certificates?: boolean;
+    stats?: boolean;
+    products?: boolean;
   };
   resources?: ResourceSettings;
   certificates?: Certificate[];
+  gallery?: GalleryImage[];
 };
 
 export type Product = {
