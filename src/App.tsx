@@ -15,6 +15,7 @@ import Admin from "./pages/Admin";
 import Gallery from "./pages/Gallery";
 import ScrollManager from "./components/ScrollManager";
 import FloatingWhatsApp from "./components/FloatingWhatsApp";
+import FloatingTranslate from "./components/FloatingTranslate";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ScrollManager />
+          <FloatingTranslate />
           <FloatingWhatsApp />
           <Routes>
             <Route path="/" element={<Index />} />

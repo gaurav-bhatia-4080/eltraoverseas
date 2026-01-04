@@ -108,6 +108,7 @@ const HeroSection = () => {
 
           {/* Trust badges */}
           <div className="grid grid-cols-3 gap-6 max-w-lg animate-fade-up-delay-3">
+            {/*
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center">
                 <Shield className="w-6 h-6 text-accent" />
@@ -117,6 +118,7 @@ const HeroSection = () => {
                 <p className="text-primary-foreground/50 text-xs">Certified</p>
               </div>
             </div>
+            */}
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center">
                 <Globe className="w-6 h-6 text-accent" />

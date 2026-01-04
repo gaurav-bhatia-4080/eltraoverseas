@@ -41,12 +41,36 @@
           "description": "25+ years of expertise in manufacturing and exporting industrial fasteners to global markets."
         },
         "features": [
-          { "icon": "shield", "title": "ISO Certified Quality", "description": "All products meet ISO 9001:2015 standards with full traceability and quality documentation." },
-          { "icon": "factory", "title": "Direct Manufacturing", "description": "Vertically integrated production ensures competitive pricing and consistent quality control." },
-          { "icon": "truck", "title": "Global Logistics", "description": "Door-to-door delivery to 50+ countries with real-time tracking and customs clearance support." },
-          { "icon": "award", "title": "Industry Standards", "description": "DIN, ANSI, JIS, and custom specifications. We speak your industry's language." },
-          { "icon": "support", "title": "Technical Support", "description": "Engineering team available for product selection, custom solutions, and technical queries." },
-          { "icon": "leaf", "title": "Sustainable Practices", "description": "Eco-friendly manufacturing with recyclable materials and carbon-neutral shipping options." }
+          {
+            "icon": "shield",
+            "title": "ISO Certified Quality",
+            "description": "All products meet ISO 9001:2015 standards with full traceability and quality documentation."
+          },
+          {
+            "icon": "factory",
+            "title": "Direct Manufacturing",
+            "description": "Vertically integrated production ensures competitive pricing and consistent quality control."
+          },
+          {
+            "icon": "truck",
+            "title": "Global Logistics",
+            "description": "Door-to-door delivery to 50+ countries with real-time tracking and customs clearance support."
+          },
+          {
+            "icon": "award",
+            "title": "Industry Standards",
+            "description": "DIN, ANSI, JIS, and custom specifications. We speak your industry's language."
+          },
+          {
+            "icon": "support",
+            "title": "Technical Support",
+            "description": "Engineering team available for product selection, custom solutions, and technical queries."
+          },
+          {
+            "icon": "leaf",
+            "title": "Sustainable Practices",
+            "description": "Eco-friendly manufacturing with recyclable materials and carbon-neutral shipping options."
+          }
         ]
       },
       "statsSection": {
@@ -56,10 +80,26 @@
           "highlight": "For Themselves"
         },
         "stats": [
-          { "value": 50, "suffix": "+", "label": "Countries Served" },
-          { "value": 25, "suffix": "+", "label": "Years Experience" },
-          { "value": 10, "suffix": "K+", "label": "Products in Catalog" },
-          { "value": 98, "suffix": "%", "label": "On-Time Delivery" }
+          {
+            "value": 50,
+            "suffix": "+",
+            "label": "Countries Served"
+          },
+          {
+            "value": 25,
+            "suffix": "+",
+            "label": "Years Experience"
+          },
+          {
+            "value": 10,
+            "suffix": "K+",
+            "label": "Products in Catalog"
+          },
+          {
+            "value": 98,
+            "suffix": "%",
+            "label": "On-Time Delivery"
+          }
         ]
       },
       "testimonialsSection": {
@@ -109,50 +149,109 @@
           "ctaLabel": "Send enquiry"
         },
         "cards": [
-          { "icon": "mail", "heading": "Email", "detail": "sales@boltworks.com", "subDetail": "Response in less than 24 hrs" },
-          { "icon": "phone", "heading": "Phone", "detail": "+91 98200 44556", "subDetail": "Mon - Sat / 9am - 8pm IST" },
-          { "icon": "location", "heading": "Warehouse", "detail": "Plot 22, GIDC Industrial Estate, Mumbai", "subDetail": "Schedule a visit" },
-          { "icon": "clock", "heading": "Production", "detail": "Capacity 12M pcs / month", "subDetail": "Expedited runs available" }
+          {
+            "icon": "mail",
+            "heading": "Email",
+            "detail": "sales@boltworks.com",
+            "subDetail": "Response in less than 24 hrs"
+          },
+          {
+            "icon": "phone",
+            "heading": "Phone",
+            "detail": "+91 98200 44556",
+            "subDetail": "Mon - Sat / 9am - 8pm IST"
+          },
+          {
+            "icon": "location",
+            "heading": "Warehouse",
+            "detail": "Plot 22, GIDC Industrial Estate, Mumbai",
+            "subDetail": "Schedule a visit"
+          }
         ]
       },
       "footer": {
         "description": "Your trusted global partner for premium industrial fasteners. Quality engineering, competitive pricing, worldwide delivery.",
         "socialLinks": [
-          { "icon": "instagram", "url": "https://instagram.com/eltraoverseas" },
-          { "icon": "youtube", "url": "https://youtube.com/@eltraoverseas" },
-          { "icon": "linkedin", "url": "https://linkedin.com/company/eltraoverseas" }
+          {
+            "icon": "instagram",
+            "url": "https://instagram.com/eltraoverseas"
+          },
+          {
+            "icon": "youtube",
+            "url": "https://youtube.com/@eltraoverseas"
+          },
+          {
+            "icon": "linkedin",
+            "url": "https://linkedin.com/company/eltraoverseas"
+          }
         ],
         "columns": [
           {
             "title": "Products",
             "links": [
-              { "name": "Hex Bolts", "href": "/products/hex-bolts" },
-              { "name": "Machine Screws", "href": "/products/machine-screws" },
-              { "name": "Nuts & Washers", "href": "/products/nuts-washers" },
-              { "name": "Anchors", "href": "/products/anchors" },
-              { "name": "Custom Fasteners", "href": "/products/specialty-fasteners" }
+              {
+                "name": "Hex Bolts",
+                "href": "/products/hex-bolts"
+              },
+              {
+                "name": "Machine Screws",
+                "href": "/products/machine-screws"
+              },
+              {
+                "name": "Nuts & Washers",
+                "href": "/products/nuts-washers"
+              },
+              {
+                "name": "Anchors",
+                "href": "/products/anchors"
+              },
+              {
+                "name": "Custom Fasteners",
+                "href": "/products/specialty-fasteners"
+              }
             ]
           },
           {
             "title": "Company",
             "links": [
-              { "name": "About Us", "href": "/#about" },
-              { "name": "Global Reach", "href": "/#stats" },
-              { "name": "Certificates", "href": "/certificates" }
+              {
+                "name": "About Us",
+                "href": "/#about"
+              },
+              {
+                "name": "Global Reach",
+                "href": "/#stats"
+              },
+              {
+                "name": "Certificates",
+                "href": "/certificates"
+              }
             ]
           },
           {
             "title": "Resources",
             "links": [
-              { "name": "Product Catalog", "href": "#" },
-              { "name": "Vlogs", "href": "/vlogs" }
+              {
+                "name": "Product Catalog",
+                "href": "#"
+              },
+              {
+                "name": "Vlogs",
+                "href": "/vlogs"
+              }
             ]
           }
         ],
-        "copyright": "© 2023 Eltra Overseas. All rights reserved.",
+        "copyright": "\u00a9 2023 Eltra Overseas. All rights reserved.",
         "legalLinks": [
-          { "name": "Privacy Policy", "href": "https://example.com/privacy.pdf" },
-          { "name": "Terms of Service", "href": "https://example.com/terms.pdf" }
+          {
+            "name": "Privacy Policy",
+            "href": "https://example.com/privacy.pdf"
+          },
+          {
+            "name": "Terms of Service",
+            "href": "https://example.com/terms.pdf"
+          }
         ]
       },
       "certificates": [
@@ -200,9 +299,21 @@
         "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?w=800&auto=format&fit=crop&q=80",
         "https://images.unsplash.com/photo-1581093588401-74d795f1b8d6?w=800&auto=format&fit=crop&q=80"
       ],
-      "materials": ["Alloy Steel", "Carbon Steel", "SS 304/316"],
-      "applications": ["Steel fabrication", "Wind turbines", "Heavy machinery"],
-      "certifications": ["ISO 898-1", "ASTM A325", "EN 14399"]
+      "materials": [
+        "Alloy Steel",
+        "Carbon Steel",
+        "SS 304/316"
+      ],
+      "applications": [
+        "Steel fabrication",
+        "Wind turbines",
+        "Heavy machinery"
+      ],
+      "certifications": [
+        "ISO 898-1",
+        "ASTM A325",
+        "EN 14399"
+      ]
     },
     "machine-screws": {
       "slug": "machine-screws",
@@ -215,9 +326,21 @@
         "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=800&auto=format&fit=crop&q=80",
         "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&auto=format&fit=crop&q=80"
       ],
-      "materials": ["Brass", "SS 304", "Alloy Steel"],
-      "applications": ["Control panels", "Automotive interiors", "Consumer appliances"],
-      "certifications": ["DIN 963/965", "RoHS", "REACH"]
+      "materials": [
+        "Brass",
+        "SS 304",
+        "Alloy Steel"
+      ],
+      "applications": [
+        "Control panels",
+        "Automotive interiors",
+        "Consumer appliances"
+      ],
+      "certifications": [
+        "DIN 963/965",
+        "RoHS",
+        "REACH"
+      ]
     },
     "nuts-washers": {
       "slug": "nuts-washers",
@@ -230,9 +353,21 @@
         "https://images.unsplash.com/photo-1440342359743-84fcb8c21f21?w=800&auto=format&fit=crop&q=80",
         "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?w=800&auto=format&fit=crop&q=80"
       ],
-      "materials": ["Carbon Steel", "Phosphor Bronze", "Stainless Steel"],
-      "applications": ["Railways", "Oil & Gas", "Fabricated structures"],
-      "certifications": ["ISO 898-2", "DIN 6915", "NACE MR0175"]
+      "materials": [
+        "Carbon Steel",
+        "Phosphor Bronze",
+        "Stainless Steel"
+      ],
+      "applications": [
+        "Railways",
+        "Oil & Gas",
+        "Fabricated structures"
+      ],
+      "certifications": [
+        "ISO 898-2",
+        "DIN 6915",
+        "NACE MR0175"
+      ]
     },
     "self-tapping-screws": {
       "slug": "self-tapping-screws",
@@ -245,9 +380,19 @@
         "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=800&auto=format&fit=crop&q=80",
         "https://images.unsplash.com/photo-1617469767053-d3b523a0b982?w=800&auto=format&fit=crop&q=80"
       ],
-      "materials": ["Carbon Steel", "Bi-metal"],
-      "applications": ["Roofing", "HVAC ducts", "Furniture"],
-      "certifications": ["IFI-136", "ISO 1479"]
+      "materials": [
+        "Carbon Steel",
+        "Bi-metal"
+      ],
+      "applications": [
+        "Roofing",
+        "HVAC ducts",
+        "Furniture"
+      ],
+      "certifications": [
+        "IFI-136",
+        "ISO 1479"
+      ]
     },
     "anchors": {
       "slug": "anchors",
@@ -260,9 +405,20 @@
         "https://images.unsplash.com/photo-1489515217757-5fd1be406fef?w=800&auto=format&fit=crop&q=80",
         "https://images.unsplash.com/photo-1507992781348-310259076fe0?w=800&auto=format&fit=crop&q=80"
       ],
-      "materials": ["Carbon Steel", "Stainless Steel"],
-      "applications": ["Civil structures", "Solar mounting", "Industrial piping"],
-      "certifications": ["ETA Option 1", "UL", "CE"]
+      "materials": [
+        "Carbon Steel",
+        "Stainless Steel"
+      ],
+      "applications": [
+        "Civil structures",
+        "Solar mounting",
+        "Industrial piping"
+      ],
+      "certifications": [
+        "ETA Option 1",
+        "UL",
+        "CE"
+      ]
     },
     "specialty-fasteners": {
       "slug": "specialty-fasteners",
@@ -275,9 +431,21 @@
         "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?w=800&auto=format&fit=crop&q=80",
         "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=800&auto=format&fit=crop&q=80"
       ],
-      "materials": ["Exotic Alloys", "Titanium", "Duplex Stainless"],
-      "applications": ["Defense", "Aerospace", "Renewables"],
-      "certifications": ["PPAP", "AS9100 docs", "IMDS"]
+      "materials": [
+        "Exotic Alloys",
+        "Titanium",
+        "Duplex Stainless"
+      ],
+      "applications": [
+        "Defense",
+        "Aerospace",
+        "Renewables"
+      ],
+      "certifications": [
+        "PPAP",
+        "AS9100 docs",
+        "IMDS"
+      ]
     }
   },
   "vlogs": {
@@ -288,7 +456,11 @@
       "summary": "Walk through our torque testing zone and see how each batch of bolts gets validated before export.",
       "description": "Join the Eltra Overseas quality engineers for an in-depth look at our lab instrumentation. We cover tensile testing, salt spray simulations, and the digital traceability workflow that keeps every fastener batch audit-ready.",
       "publishedOn": "Jan 05, 2024",
-      "tags": ["Quality", "Testing", "Factory"]
+      "tags": [
+        "Quality",
+        "Testing",
+        "Factory"
+      ]
     },
     "global-shipping-network-overview": {
       "slug": "global-shipping-network-overview",
@@ -297,7 +469,10 @@
       "summary": "Operations lead Neeraj explains how we consolidate orders, pack for corrosion protection, and dispatch worldwide.",
       "description": "From booking containers to lining each crate with VCI protection sheets, this vlog shows how Eltra Overseas keeps deliveries fast and flawless. Learn about our preferred ports, inspection checkpoints, and logistics partners.",
       "publishedOn": "Dec 12, 2023",
-      "tags": ["Logistics", "Operations"]
+      "tags": [
+        "Logistics",
+        "Operations"
+      ]
     }
   },
   "contactSubmissions": {

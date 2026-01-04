@@ -86,8 +86,10 @@ const Navbar = () => {
       <div className="container-custom">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <EltraLogo className="w-16 h-16 transition-transform group-hover:scale-110 duration-500" />
+          <Link to="/" className="flex items-center gap-4 group">
+            <div className="w-16 h-16 md:w-24 md:h-24">
+              <EltraLogo className="w-full h-full transition-transform group-hover:scale-110 duration-500" />
+            </div>
             <span className="font-display font-bold text-xl text-foreground">
               {content?.branding?.brandName ?? "Eltra Overseas"}
             </span>

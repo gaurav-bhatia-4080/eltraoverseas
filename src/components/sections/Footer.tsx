@@ -1,13 +1,12 @@
-import { Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
+import { Youtube, Twitter, Linkedin, Instagram } from "lucide-react";
 import { useHomeContent } from "@/hooks/useHomeContent";
 import EltraLogo from "@/components/EltraLogo";
-import GoogleTranslate from "@/components/GoogleTranslate";
 
 const iconMap = {
-  facebook: Facebook,
   twitter: Twitter,
   linkedin: Linkedin,
   instagram: Instagram,
+  youtube: Youtube,
 };
 
 const Footer = () => {
@@ -32,8 +31,8 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 pb-12 border-b border-primary-foreground/10">
           {/* Brand Column */}
           <div className="lg:col-span-2">
-            <a href="#" className="flex items-center gap-3 mb-6">
-              <EltraLogo className="w-24 h-24" />
+            <a href="#" className="flex items-center gap-4 mb-6">
+              <EltraLogo className="w-36 h-36" />
               <span className="font-display font-bold text-2xl text-primary-foreground">
                 {content?.branding?.brandName ?? "Eltra Overseas"}
               </span>
@@ -47,7 +46,7 @@ const Footer = () => {
               {footer.socialLinks
                 .filter((link) => ["instagram", "youtube", "linkedin"].includes(link.icon))
                 .map((link) => {
-                  const Icon = iconMap[link.icon as keyof typeof iconMap] ?? Facebook;
+                  const Icon = iconMap[link.icon as keyof typeof iconMap] ?? Youtube;
                   return (
                     <a
                       key={link.icon}
@@ -60,9 +59,6 @@ const Footer = () => {
                     </a>
                   );
                 })}
-            </div>
-            <div className="mt-6">
-              <GoogleTranslate />
             </div>
           </div>
 
