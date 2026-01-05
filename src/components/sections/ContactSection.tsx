@@ -11,6 +11,8 @@ import { Mail, Phone, MapPin, Clock } from "lucide-react";
 import { useHomeContent } from "@/hooks/useHomeContent";
 import { db } from "@/lib/firebase";
 import { phoneCountries } from "@/data/phoneCountries";
+import ReCAPTCHA from "react-google-recaptcha";
+import { useRef } from "react";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -20,6 +22,7 @@ const contactSchema = z.object({
   phoneCountryIso: z.string().min(1, "Select country code"),
   phone: z.string().optional(),
   message: z.string().min(10, "Tell us a little more about your requirement"),
+  captchaToken: z.string().min(1, "Please complete the CAPTCHA verification"),
 });
 
 type ContactFormValues = z.infer<typeof contactSchema>;
@@ -35,6 +38,7 @@ const ContactSection = () => {
   const { toast } = useToast();
   const { data: content, isLoading, error } = useHomeContent();
   const section = content?.contactSection;
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
@@ -46,6 +50,7 @@ const ContactSection = () => {
       phoneCountryIso: "IN",
       phone: "",
       message: "",
+      captchaToken: "",
     },
   });
 
@@ -70,6 +75,7 @@ const ContactSection = () => {
         description: `Thanks ${values.name}, our sales desk will respond shortly.`,
       });
       form.reset();
+      recaptchaRef.current?.reset();
     } catch (error) {
       console.error("Failed to submit contact form", error);
       toast({
@@ -77,6 +83,7 @@ const ContactSection = () => {
         description: "Please try again in a moment or email us directly.",
         variant: "destructive",
       });
+      recaptchaRef.current?.reset();
     }
   };
 
@@ -242,6 +249,25 @@ const ContactSection = () => {
                       <FormLabel>Message</FormLabel>
                       <FormControl>
                         <Textarea rows={4} placeholder={formContent.messagePlaceholder} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="captchaToken"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <div className="flex justify-center">
+                          <ReCAPTCHA
+                            ref={recaptchaRef}
+                            sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY || ""}
+                            onChange={(token) => field.onChange(token || "")}
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
