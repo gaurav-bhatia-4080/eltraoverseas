@@ -7,6 +7,8 @@ const HeroSection = () => {
   const { data: content, isLoading, error } = useHomeContent();
   const hero = content?.hero;
   const catalogUrl = content?.resources?.catalogUrl || "#";
+  const primaryCtaLabel = hero?.primaryCtaLabel || "Explore Products";
+  const secondaryCtaLabel = hero?.secondaryCtaLabel || "Download Catalog";
 
   const heroImages = useMemo(() => {
     const images = hero?.imageUrls?.filter(Boolean) ?? [];
@@ -96,12 +98,12 @@ const HeroSection = () => {
                 el?.scrollIntoView({ behavior: "smooth" });
               }}
             >
-              Explore Products
+              {primaryCtaLabel}
               <ArrowRight className="w-5 h-5 ml-1" />
             </Button>
             <Button variant="hero-outline" size="xl" asChild>
               <a href={catalogUrl} target="_blank" rel="noreferrer" download>
-                Download Catalog
+                {secondaryCtaLabel}
               </a>
             </Button>
           </div>

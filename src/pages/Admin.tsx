@@ -18,6 +18,9 @@ import {
   ContactSubmission,
   ContactSubmissionStatus,
   GalleryImage,
+  FooterColumn,
+  FeaturesSectionContent,
+  StatsSectionContent,
 } from "@/types/content";
 import Navbar from "@/components/sections/Navbar";
 import Footer from "@/components/sections/Footer";
@@ -50,6 +53,26 @@ const contactFormDefaults = {
   ctaLabel: "Send enquiry",
 };
 
+const createDefaultFeaturesSection = (): FeaturesSectionContent => ({
+  header: {
+    eyebrow: "",
+    title: "",
+    highlight: "",
+    description: "",
+  },
+  features: [],
+});
+
+const createDefaultStatsSection = (): StatsSectionContent => ({
+  header: {
+    eyebrow: "",
+    title: "",
+    highlight: "",
+    description: "",
+  },
+  stats: [],
+});
+
 const Admin = () => {
   const [user, setUser] = useState<{ email: string | null } | null>(null);
   const [email, setEmail] = useState("");
@@ -63,12 +86,16 @@ const Admin = () => {
   const { data: contactSubmissions, isLoading: loadingSubmissions } = useContactSubmissions();
 
   const [heroForm, setHeroForm] = useState<HeroContent | null>(null);
+  const [featuresForm, setFeaturesForm] = useState<FeaturesSectionContent | null>(null);
+  const [statsForm, setStatsForm] = useState<StatsSectionContent | null>(null);
   const [contactForm, setContactForm] = useState<ContactSectionContent | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<string>("");
   const [productForm, setProductForm] = useState<Product | null>(null);
   const [selectedVlog, setSelectedVlog] = useState<string>("");
   const [vlogForm, setVlogForm] = useState<Vlog | null>(null);
   const [savingHero, setSavingHero] = useState(false);
+  const [savingFeatures, setSavingFeatures] = useState(false);
+  const [savingStats, setSavingStats] = useState(false);
   const [savingContact, setSavingContact] = useState(false);
   const [savingProduct, setSavingProduct] = useState(false);
   const [savingVlog, setSavingVlog] = useState(false);
@@ -86,6 +113,8 @@ const Admin = () => {
   const [savingCertificates, setSavingCertificates] = useState(false);
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [savingGallery, setSavingGallery] = useState(false);
+  const [footerDescription, setFooterDescription] = useState("");
+  const [footerColumns, setFooterColumns] = useState<FooterColumn[]>([]);
   const defaultSocialIcons = [
     { icon: "instagram", label: "Instagram" },
     { icon: "youtube", label: "YouTube" },
@@ -98,7 +127,7 @@ const Admin = () => {
     { name: "Privacy Policy", href: "" },
     { name: "Terms of Service", href: "" },
   ]);
-  const [savingSocialLinks, setSavingSocialLinks] = useState(false);
+  const [savingFooter, setSavingFooter] = useState(false);
   const [updatingSubmissionId, setUpdatingSubmissionId] = useState<string | null>(null);
   const [deletingSubmissionId, setDeletingSubmissionId] = useState<string | null>(null);
 
@@ -118,6 +147,16 @@ const Admin = () => {
   useEffect(() => {
     if (homeContent?.hero) {
       setHeroForm(homeContent.hero);
+    }
+    if (homeContent?.featuresSection) {
+      setFeaturesForm(homeContent.featuresSection);
+    } else {
+      setFeaturesForm(createDefaultFeaturesSection());
+    }
+    if (homeContent?.statsSection) {
+      setStatsForm(homeContent.statsSection);
+    } else {
+      setStatsForm(createDefaultStatsSection());
     }
     if (homeContent?.contactSection) {
       setContactForm({
@@ -153,7 +192,9 @@ const Admin = () => {
     } else {
       setGalleryImages([]);
     }
-    if (homeContent?.footer?.socialLinks) {
+    if (homeContent?.footer) {
+      setFooterDescription(homeContent.footer.description ?? "");
+      setFooterColumns(homeContent.footer.columns ?? []);
       setSocialLinks(
         defaultSocialIcons.map((item) => ({
           icon: item.icon,
@@ -271,6 +312,22 @@ const Admin = () => {
     setSavingHero(false);
   };
 
+  const saveFeatures = async () => {
+    if (!featuresForm) return;
+    setSavingFeatures(true);
+    await setDoc(doc(db, "siteContent", "home"), { featuresSection: featuresForm }, { merge: true });
+    setSavingFeatures(false);
+    await queryClient.invalidateQueries({ queryKey: ["home-content"] });
+  };
+
+  const saveStats = async () => {
+    if (!statsForm) return;
+    setSavingStats(true);
+    await setDoc(doc(db, "siteContent", "home"), { statsSection: statsForm }, { merge: true });
+    setSavingStats(false);
+    await queryClient.invalidateQueries({ queryKey: ["home-content"] });
+  };
+
   const saveContact = async () => {
     if (!contactForm) return;
     setSavingContact(true);
@@ -352,20 +409,21 @@ const Admin = () => {
     await queryClient.invalidateQueries({ queryKey: ["home-content"] });
   };
 
-  const saveSocialLinks = async () => {
-    setSavingSocialLinks(true);
+  const saveFooter = async () => {
+    setSavingFooter(true);
     await setDoc(
       doc(db, "siteContent", "home"),
       {
         footer: {
-          ...homeContent?.footer,
+          description: footerDescription,
+          columns: footerColumns,
           socialLinks: socialLinks.map(({ icon, url }) => ({ icon, url })),
           legalLinks,
         },
       },
       { merge: true },
     );
-    setSavingSocialLinks(false);
+    setSavingFooter(false);
     await queryClient.invalidateQueries({ queryKey: ["home-content"] });
   };
 
@@ -388,6 +446,53 @@ const Admin = () => {
     await deleteDoc(doc(db, "contactSubmissions", submissionId));
     setDeletingSubmissionId(null);
     await queryClient.invalidateQueries({ queryKey: ["contact-submissions"] });
+  };
+
+  const addFooterColumn = () => {
+    setFooterColumns((prev) => [...prev, { title: "", links: [] }]);
+  };
+
+  const removeFooterColumn = (index: number) => {
+    setFooterColumns((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const updateFooterColumnTitle = (index: number, value: string) => {
+    setFooterColumns((prev) => {
+      const next = [...prev];
+      next[index] = { ...next[index], title: value };
+      return next;
+    });
+  };
+
+  const updateFooterLink = (columnIndex: number, linkIndex: number, key: "name" | "href", value: string) => {
+    setFooterColumns((prev) => {
+      const next = [...prev];
+      const column = next[columnIndex];
+      const links = [...(column.links ?? [])];
+      links[linkIndex] = { ...links[linkIndex], [key]: value };
+      next[columnIndex] = { ...column, links };
+      return next;
+    });
+  };
+
+  const addFooterLink = (columnIndex: number) => {
+    setFooterColumns((prev) => {
+      const next = [...prev];
+      const column = next[columnIndex];
+      const links = [...(column.links ?? []), { name: "", href: "" }];
+      next[columnIndex] = { ...column, links };
+      return next;
+    });
+  };
+
+  const removeFooterLink = (columnIndex: number, linkIndex: number) => {
+    setFooterColumns((prev) => {
+      const next = [...prev];
+      const column = next[columnIndex];
+      const links = (column.links ?? []).filter((_, i) => i !== linkIndex);
+      next[columnIndex] = { ...column, links };
+      return next;
+    });
   };
 
   if (!user) {
@@ -445,6 +550,8 @@ const Admin = () => {
     loadingVlogs ||
     loadingSubmissions ||
     !heroForm ||
+    !featuresForm ||
+    !statsForm ||
     !contactForm ||
     !productForm ||
     !vlogForm ||
@@ -672,6 +779,301 @@ const Admin = () => {
           </section>
 
           <section className="card-industrial p-8 space-y-6">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Homepage</p>
+                <h2 className="text-2xl font-display">Why Choose Us</h2>
+                <p className="text-muted-foreground text-sm mt-2 max-w-xl">
+                  Control the About/Why Choose Us content including header copy and the icon cards.
+                </p>
+              </div>
+              <div className="flex gap-3 flex-wrap">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() =>
+                    setFeaturesForm((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+                            features: [...prev.features, { icon: "shield", title: "", description: "" }],
+                          }
+                        : prev,
+                    )
+                  }
+                >
+                  Add feature
+                </Button>
+                <Button onClick={saveFeatures} disabled={savingFeatures}>
+                  {savingFeatures ? "Saving..." : "Save section"}
+                </Button>
+              </div>
+            </div>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium">Eyebrow</label>
+                <Input
+                  value={featuresForm?.header.eyebrow ?? ""}
+                  onChange={(event) =>
+                    setFeaturesForm((prev) => (prev ? { ...prev, header: { ...prev.header, eyebrow: event.target.value } } : prev))
+                  }
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Title</label>
+                <Input
+                  value={featuresForm?.header.title ?? ""}
+                  onChange={(event) =>
+                    setFeaturesForm((prev) => (prev ? { ...prev, header: { ...prev.header, title: event.target.value } } : prev))
+                  }
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Highlight</label>
+                <Input
+                  value={featuresForm?.header.highlight ?? ""}
+                  onChange={(event) =>
+                    setFeaturesForm((prev) => (prev ? { ...prev, header: { ...prev.header, highlight: event.target.value } } : prev))
+                  }
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Description</label>
+                <Textarea
+                  rows={2}
+                  value={featuresForm?.header.description ?? ""}
+                  onChange={(event) =>
+                    setFeaturesForm((prev) => (prev ? { ...prev, header: { ...prev.header, description: event.target.value } } : prev))
+                  }
+                />
+              </div>
+            </div>
+            <div className="space-y-4">
+              {featuresForm?.features.map((feature, index) => (
+                <div key={`feature-${index}`} className="border rounded-xl p-4 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <p className="font-semibold">Feature #{index + 1}</p>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        setFeaturesForm((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                features: prev.features.filter((_, i) => i !== index),
+                              }
+                            : prev,
+                        )
+                      }
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">Icon key</label>
+                      <Input
+                        value={feature.icon}
+                        onChange={(event) =>
+                          setFeaturesForm((prev) => {
+                            if (!prev) return prev;
+                            const next = [...prev.features];
+                            next[index] = { ...next[index], icon: event.target.value };
+                            return { ...prev, features: next };
+                          })
+                        }
+                        placeholder="shield"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">shield, factory, truck, award, support, leaf</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Title</label>
+                      <Input
+                        value={feature.title}
+                        onChange={(event) =>
+                          setFeaturesForm((prev) => {
+                            if (!prev) return prev;
+                            const next = [...prev.features];
+                            next[index] = { ...next[index], title: event.target.value };
+                            return { ...prev, features: next };
+                          })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Description</label>
+                      <Textarea
+                        rows={2}
+                        value={feature.description}
+                        onChange={(event) =>
+                          setFeaturesForm((prev) => {
+                            if (!prev) return prev;
+                            const next = [...prev.features];
+                            next[index] = { ...next[index], description: event.target.value };
+                            return { ...prev, features: next };
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {featuresForm && featuresForm.features.length === 0 && (
+                <p className="text-sm text-muted-foreground">No features yet. Add one to get started.</p>
+              )}
+            </div>
+          </section>
+
+          <section className="card-industrial p-8 space-y-6">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Homepage</p>
+                <h2 className="text-2xl font-display">Global Stats</h2>
+                <p className="text-muted-foreground text-sm mt-2 max-w-xl">
+                  Update the statistics shown in the Global Impact section.
+                </p>
+              </div>
+              <div className="flex gap-3 flex-wrap">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() =>
+                    setStatsForm((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+                            stats: [...prev.stats, { value: 0, suffix: "+", label: "" }],
+                          }
+                        : prev,
+                    )
+                  }
+                >
+                  Add stat
+                </Button>
+                <Button onClick={saveStats} disabled={savingStats}>
+                  {savingStats ? "Saving..." : "Save stats"}
+                </Button>
+              </div>
+            </div>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium">Eyebrow</label>
+                <Input
+                  value={statsForm?.header.eyebrow ?? ""}
+                  onChange={(event) =>
+                    setStatsForm((prev) => (prev ? { ...prev, header: { ...prev.header, eyebrow: event.target.value } } : prev))
+                  }
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Title</label>
+                <Input
+                  value={statsForm?.header.title ?? ""}
+                  onChange={(event) =>
+                    setStatsForm((prev) => (prev ? { ...prev, header: { ...prev.header, title: event.target.value } } : prev))
+                  }
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Highlight</label>
+                <Input
+                  value={statsForm?.header.highlight ?? ""}
+                  onChange={(event) =>
+                    setStatsForm((prev) => (prev ? { ...prev, header: { ...prev.header, highlight: event.target.value } } : prev))
+                  }
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Description (optional)</label>
+                <Textarea
+                  rows={2}
+                  value={statsForm?.header.description ?? ""}
+                  onChange={(event) =>
+                    setStatsForm((prev) => (prev ? { ...prev, header: { ...prev.header, description: event.target.value } } : prev))
+                  }
+                />
+              </div>
+            </div>
+            <div className="space-y-4">
+              {statsForm?.stats.map((stat, index) => (
+                <div key={`stat-${index}`} className="border rounded-xl p-4 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <p className="font-semibold">Stat #{index + 1}</p>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        setStatsForm((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                stats: prev.stats.filter((_, i) => i !== index),
+                              }
+                            : prev,
+                        )
+                      }
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">Value</label>
+                      <Input
+                        type="number"
+                        value={stat.value}
+                        onChange={(event) =>
+                          setStatsForm((prev) => {
+                            if (!prev) return prev;
+                            const next = [...prev.stats];
+                            next[index] = { ...next[index], value: Number(event.target.value) };
+                            return { ...prev, stats: next };
+                          })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Suffix</label>
+                      <Input
+                        value={stat.suffix ?? ""}
+                        onChange={(event) =>
+                          setStatsForm((prev) => {
+                            if (!prev) return prev;
+                            const next = [...prev.stats];
+                            next[index] = { ...next[index], suffix: event.target.value };
+                            return { ...prev, stats: next };
+                          })
+                        }
+                        placeholder="+ / % / K"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Label</label>
+                      <Input
+                        value={stat.label}
+                        onChange={(event) =>
+                          setStatsForm((prev) => {
+                            if (!prev) return prev;
+                            const next = [...prev.stats];
+                            next[index] = { ...next[index], label: event.target.value };
+                            return { ...prev, stats: next };
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {statsForm && statsForm.stats.length === 0 && (
+                <p className="text-sm text-muted-foreground">No stats configured. Add at least one metric.</p>
+              )}
+            </div>
+          </section>
+
+          <section className="card-industrial p-8 space-y-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Homepage</p>
@@ -830,12 +1232,66 @@ const Admin = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Footer</p>
-                <h2 className="text-2xl font-display">Social Links</h2>
+                <h2 className="text-2xl font-display">Footer Content</h2>
               </div>
-              <Button onClick={saveSocialLinks} disabled={savingSocialLinks}>
-                {savingSocialLinks ? "Saving..." : "Save social links"}
+              <Button onClick={saveFooter} disabled={savingFooter}>
+                {savingFooter ? "Saving..." : "Save footer"}
               </Button>
             </div>
+
+            <div>
+              <label className="text-sm font-medium">Description</label>
+              <Textarea rows={3} value={footerDescription} onChange={(event) => setFooterDescription(event.target.value)} />
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-semibold">Footer Columns</p>
+                <Button type="button" variant="outline" size="sm" onClick={addFooterColumn}>
+                  Add column
+                </Button>
+              </div>
+              {footerColumns.length === 0 && <p className="text-sm text-muted-foreground">No columns configured.</p>}
+              {footerColumns.map((column, columnIndex) => (
+                <div key={`footer-column-${columnIndex}`} className="border rounded-xl p-4 space-y-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <Input
+                      value={column.title}
+                      onChange={(event) => updateFooterColumnTitle(columnIndex, event.target.value)}
+                      placeholder="Column title"
+                    />
+                    <Button variant="ghost" size="sm" onClick={() => removeFooterColumn(columnIndex)}>
+                      Remove
+                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    {(column.links ?? []).map((link, linkIndex) => (
+                      <div key={`footer-link-${columnIndex}-${linkIndex}`} className="grid md:grid-cols-2 gap-3 items-center">
+                        <Input
+                          value={link.name}
+                          onChange={(event) => updateFooterLink(columnIndex, linkIndex, "name", event.target.value)}
+                          placeholder="Link name"
+                        />
+                        <div className="flex gap-3">
+                          <Input
+                            value={link.href}
+                            onChange={(event) => updateFooterLink(columnIndex, linkIndex, "href", event.target.value)}
+                            placeholder="https://example.com"
+                          />
+                          <Button variant="ghost" size="sm" onClick={() => removeFooterLink(columnIndex, linkIndex)}>
+                            Remove
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                    <Button variant="outline" size="sm" onClick={() => addFooterLink(columnIndex)}>
+                      Add link
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
             <div className="grid md:grid-cols-3 gap-4">
               {socialLinks.map((link, index) => (
                 <div key={link.icon} className="space-y-2">
@@ -852,6 +1308,7 @@ const Admin = () => {
                 </div>
               ))}
             </div>
+
             <div className="grid md:grid-cols-2 gap-4">
               {legalLinks.map((link, index) => (
                 <div key={link.name} className="space-y-2">
