@@ -180,3 +180,13 @@ export type Vlog = {
   publishedOn: string;
   tags: string[];
 };
+
+export type UploadedImage = {
+  id: string;
+  filename: string;
+  siteUrl: string;
+  githubRawUrl: string;
+  mimeType: string;
+  size: number;
+  uploadedAt: string;
+};

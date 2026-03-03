@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { doc, setDoc, deleteDoc, updateDoc } from "firebase/firestore";
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { httpsCallable } from "firebase/functions";
 import { useQueryClient } from "@tanstack/react-query";
 import { useHomeContent } from "@/hooks/useHomeContent";
 import { useProducts } from "@/hooks/useProducts";
 import { useVlogs } from "@/hooks/useVlogs";
 import { useContactSubmissions } from "@/hooks/useContactSubmissions";
-import { auth, db } from "@/lib/firebase";
+import { useUploadedImages } from "@/hooks/useUploadedImages";
+import { auth, db, functions } from "@/lib/firebase";
 import {
   HeroContent,
   ContactSectionContent,
@@ -21,6 +23,7 @@ import {
   FooterColumn,
   FeaturesSectionContent,
   StatsSectionContent,
+  UploadedImage,
 } from "@/types/content";
 import Navbar from "@/components/sections/Navbar";
 import Footer from "@/components/sections/Footer";
@@ -130,6 +133,15 @@ const Admin = () => {
   const [savingFooter, setSavingFooter] = useState(false);
   const [updatingSubmissionId, setUpdatingSubmissionId] = useState<string | null>(null);
   const [deletingSubmissionId, setDeletingSubmissionId] = useState<string | null>(null);
+
+  // Image Library
+  const { data: uploadedImages, isLoading: loadingImages } = useUploadedImages();
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadPreview, setUploadPreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [deletingImageId, setDeletingImageId] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const updateContactFormField = (key: keyof typeof contactFormDefaults, value: string) => {
     if (!contactForm) return;
@@ -586,6 +598,67 @@ const Admin = () => {
   const formatPhone = (submission: ContactSubmission) => {
     if (!submission.phone) return "—";
     return `${submission.phoneCountryCode ?? ""} ${submission.phone}`.trim();
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+  };
+
+  const handleFileChange = (file: File) => {
+    setUploadFile(file);
+    setUploadPreview(URL.createObjectURL(file));
+    setUploadError(null);
+  };
+
+  const handleUpload = async () => {
+    if (!uploadFile) return;
+    setUploading(true);
+    setUploadError(null);
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          try {
+            const dataUrl = e.target?.result as string;
+            const base64 = dataUrl.split(",")[1];
+            const uploadFn = httpsCallable(functions, "uploadImageToRepo");
+            await uploadFn({ filename: uploadFile.name, contentBase64: base64, mimeType: uploadFile.type });
+            queryClient.invalidateQueries({ queryKey: ["uploaded-images"] });
+            setUploadFile(null);
+            setUploadPreview(null);
+            if (fileInputRef.current) fileInputRef.current.value = "";
+            resolve();
+          } catch (err) {
+            reject(err);
+          }
+        };
+        reader.onerror = () => reject(new Error("Failed to read file"));
+        reader.readAsDataURL(uploadFile);
+      });
+    } catch (err: unknown) {
+      setUploadError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDeleteImage = async (image: UploadedImage) => {
+    setDeletingImageId(image.id);
+    try {
+      const deleteFn = httpsCallable(functions, "deleteUploadedImage");
+      await deleteFn({ firestoreId: image.id, filename: image.filename });
+      queryClient.invalidateQueries({ queryKey: ["uploaded-images"] });
+    } catch (err: unknown) {
+      console.error("Delete failed", err);
+    } finally {
+      setDeletingImageId(null);
+    }
   };
 
   return (
@@ -1765,6 +1838,109 @@ const Admin = () => {
                 </div>
               ))}
             </div>
+          </section>
+
+          {/* ── Image Library ───────────────────────────────────────────────── */}
+          <section className="card-industrial p-8 space-y-6">
+            <div>
+              <p className="text-sm text-muted-foreground">Assets</p>
+              <h2 className="text-2xl font-display">Image Library</h2>
+              <p className="text-muted-foreground text-sm mt-2 max-w-xl">
+                Upload images directly to the repository. The GitHub raw URL is available immediately. The site URL
+                goes live after Vercel redeploys (~1–2 min).
+              </p>
+            </div>
+
+            {/* Upload area */}
+            <div className="border-2 border-dashed rounded-xl p-6 space-y-4">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleFileChange(file);
+                }}
+              />
+              {uploadPreview ? (
+                <div className="flex items-start gap-6 flex-wrap">
+                  <img src={uploadPreview} alt="Preview" className="w-32 h-32 object-cover rounded-lg border" />
+                  <div className="space-y-2 flex-1 min-w-0">
+                    <p className="font-medium truncate">{uploadFile?.name}</p>
+                    <p className="text-sm text-muted-foreground">{formatFileSize(uploadFile?.size ?? 0)}</p>
+                    {uploadError && <p className="text-sm text-destructive">{uploadError}</p>}
+                    <div className="flex gap-3 flex-wrap">
+                      <Button onClick={handleUpload} disabled={uploading}>
+                        {uploading ? "Uploading…" : "Upload to repo"}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        disabled={uploading}
+                        onClick={() => {
+                          setUploadFile(null);
+                          setUploadPreview(null);
+                          setUploadError(null);
+                          if (fileInputRef.current) fileInputRef.current.value = "";
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-3 py-4 text-center">
+                  <p className="text-sm text-muted-foreground">Pick an image to upload (max 5 MB)</p>
+                  <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+                    Choose image
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            {/* Uploaded images grid */}
+            {loadingImages ? (
+              <p className="text-sm text-muted-foreground">Loading images…</p>
+            ) : uploadedImages && uploadedImages.length > 0 ? (
+              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {uploadedImages.map((image) => (
+                  <div key={image.id} className="border rounded-xl overflow-hidden">
+                    <img
+                      src={image.githubRawUrl}
+                      alt={image.filename}
+                      className="w-full h-40 object-cover"
+                      loading="lazy"
+                    />
+                    <div className="p-3 space-y-2">
+                      <p className="text-sm font-medium truncate">{image.filename}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {formatFileSize(image.size)} · {new Date(image.uploadedAt).toLocaleDateString()}
+                      </p>
+                      <div className="flex gap-2 flex-wrap">
+                        <Button size="sm" variant="outline" className="text-xs" onClick={() => copyToClipboard(image.siteUrl)}>
+                          Copy site URL
+                        </Button>
+                        <Button size="sm" variant="outline" className="text-xs" onClick={() => copyToClipboard(image.githubRawUrl)}>
+                          Copy raw URL
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-xs text-destructive hover:text-destructive"
+                          disabled={deletingImageId === image.id}
+                          onClick={() => handleDeleteImage(image)}
+                        >
+                          {deletingImageId === image.id ? "Deleting…" : "Delete"}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">No images uploaded yet.</p>
+            )}
           </section>
         </div>
       </main>
