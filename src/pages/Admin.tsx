@@ -1,15 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { doc, setDoc, deleteDoc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, setDoc, deleteDoc, updateDoc } from "firebase/firestore";
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
-import { httpsCallable } from "firebase/functions";
 import { useQueryClient } from "@tanstack/react-query";
 import { useHomeContent } from "@/hooks/useHomeContent";
 import { useProducts } from "@/hooks/useProducts";
 import { useVlogs } from "@/hooks/useVlogs";
 import { useContactSubmissions } from "@/hooks/useContactSubmissions";
 import { useUploadedImages } from "@/hooks/useUploadedImages";
-import { auth, db, functions } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import {
   HeroContent,
   ContactSectionContent,
@@ -621,14 +620,47 @@ const Admin = () => {
     setUploading(true);
     setUploadError(null);
     try {
+      const idToken = await auth.currentUser?.getIdToken();
+      if (!idToken) throw new Error("Not authenticated");
+
       await new Promise<void>((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = async (e) => {
           try {
             const dataUrl = e.target?.result as string;
             const base64 = dataUrl.split(",")[1];
-            const uploadFn = httpsCallable(functions, "uploadImageToRepo");
-            await uploadFn({ filename: uploadFile.name, contentBase64: base64, mimeType: uploadFile.type });
+
+            const resp = await fetch("/api/upload-image", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${idToken}`,
+              },
+              body: JSON.stringify({ filename: uploadFile.name, contentBase64: base64, mimeType: uploadFile.type }),
+            });
+
+            if (!resp.ok) {
+              const err = (await resp.json()) as { error?: string };
+              throw new Error(err.error ?? "Upload failed");
+            }
+
+            const result = (await resp.json()) as {
+              filename: string;
+              siteUrl: string;
+              githubRawUrl: string;
+              mimeType: string;
+              size: number;
+            };
+
+            await addDoc(collection(db, "uploadedImages"), {
+              filename: result.filename,
+              siteUrl: result.siteUrl,
+              githubRawUrl: result.githubRawUrl,
+              mimeType: result.mimeType,
+              size: result.size,
+              uploadedAt: new Date(),
+            });
+
             queryClient.invalidateQueries({ queryKey: ["uploaded-images"] });
             setUploadFile(null);
             setUploadPreview(null);
@@ -651,8 +683,24 @@ const Admin = () => {
   const handleDeleteImage = async (image: UploadedImage) => {
     setDeletingImageId(image.id);
     try {
-      const deleteFn = httpsCallable(functions, "deleteUploadedImage");
-      await deleteFn({ firestoreId: image.id, filename: image.filename });
+      const idToken = await auth.currentUser?.getIdToken();
+      if (!idToken) throw new Error("Not authenticated");
+
+      const resp = await fetch("/api/delete-image", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({ filename: image.filename }),
+      });
+
+      if (!resp.ok) {
+        const err = (await resp.json()) as { error?: string };
+        throw new Error(err.error ?? "Delete failed");
+      }
+
+      await deleteDoc(doc(db, "uploadedImages", image.id));
       queryClient.invalidateQueries({ queryKey: ["uploaded-images"] });
     } catch (err: unknown) {
       console.error("Delete failed", err);
