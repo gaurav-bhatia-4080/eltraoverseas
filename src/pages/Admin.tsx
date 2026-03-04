@@ -615,6 +615,46 @@ const Admin = () => {
     setUploadError(null);
   };
 
+  // Compress image using canvas before upload.
+  // Scales down to max 1920px and reduces JPEG quality until under 1.5 MB.
+  const compressImage = (file: File): Promise<{ base64: string; size: number; mimeType: string }> =>
+    new Promise((resolve, reject) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const MAX_DIM = 1920;
+        let { width, height } = img;
+        if (width > MAX_DIM || height > MAX_DIM) {
+          if (width >= height) {
+            height = Math.round((height * MAX_DIM) / width);
+            width = MAX_DIM;
+          } else {
+            width = Math.round((width * MAX_DIM) / height);
+            height = MAX_DIM;
+          }
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return reject(new Error("Canvas not available"));
+        ctx.drawImage(img, 0, 0, width, height);
+
+        let quality = 0.85;
+        let dataUrl = canvas.toDataURL("image/jpeg", quality);
+        // Reduce quality until compressed size is under 1.5 MB
+        while (dataUrl.length * 0.75 > 1.5 * 1024 * 1024 && quality > 0.3) {
+          quality -= 0.1;
+          dataUrl = canvas.toDataURL("image/jpeg", quality);
+        }
+        const base64 = dataUrl.split(",")[1];
+        resolve({ base64, size: Math.ceil(base64.length * 0.75), mimeType: "image/jpeg" });
+      };
+      img.onerror = () => reject(new Error("Failed to load image"));
+      img.src = url;
+    });
+
   const handleUpload = async () => {
     if (!uploadFile) return;
     setUploading(true);
@@ -623,20 +663,18 @@ const Admin = () => {
       const idToken = await auth.currentUser?.getIdToken();
       if (!idToken) throw new Error("Not authenticated");
 
-      await new Promise<void>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          try {
-            const dataUrl = e.target?.result as string;
-            const base64 = dataUrl.split(",")[1];
+      const { base64, size, mimeType: compressedMimeType } = await compressImage(uploadFile);
 
+      await new Promise<void>((resolve, reject) => {
+        (async () => {
+          try {
             const resp = await fetch("/api/upload-image", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${idToken}`,
               },
-              body: JSON.stringify({ filename: uploadFile.name, contentBase64: base64, mimeType: uploadFile.type }),
+              body: JSON.stringify({ filename: uploadFile.name, contentBase64: base64, mimeType: compressedMimeType }),
             });
 
             if (!resp.ok) {
@@ -657,7 +695,7 @@ const Admin = () => {
               siteUrl: result.siteUrl,
               githubRawUrl: result.githubRawUrl,
               mimeType: result.mimeType,
-              size: result.size,
+              size,
               uploadedAt: new Date(),
             });
 
@@ -669,9 +707,7 @@ const Admin = () => {
           } catch (err) {
             reject(err);
           }
-        };
-        reader.onerror = () => reject(new Error("Failed to read file"));
-        reader.readAsDataURL(uploadFile);
+        })();
       });
     } catch (err: unknown) {
       setUploadError(err instanceof Error ? err.message : "Upload failed");
