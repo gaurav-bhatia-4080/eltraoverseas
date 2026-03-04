@@ -1,3 +1,12 @@
+// Increase Vercel's default 4.5 MB body limit — base64 of a 5 MB file is ~6.7 MB
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: "10mb",
+    },
+  },
+};
+
 const ADMIN_EMAIL = "elia470jassy@gmail.com";
 const GITHUB_OWNER = "gaurav-bhatia-4080";
 const GITHUB_REPO = "eltraoverseas";
@@ -46,7 +55,11 @@ export default async function handler(req: any, res: any) {
   if (!mimeType.startsWith("image/")) {
     return res.status(400).json({ error: "Only image files are allowed" });
   }
-  const sizeBytes = Math.ceil((contentBase64.length * 3) / 4);
+
+  // Strip any accidental whitespace/newlines that would corrupt the base64
+  const cleanBase64 = contentBase64.replace(/\s/g, "");
+
+  const sizeBytes = Math.ceil((cleanBase64.length * 3) / 4);
   if (sizeBytes > 5 * 1024 * 1024) {
     return res.status(400).json({ error: "File exceeds 5 MB limit" });
   }
@@ -82,7 +95,7 @@ export default async function handler(req: any, res: any) {
 
   const body: Record<string, unknown> = {
     message: `chore: upload image ${sanitised}`,
-    content: contentBase64,
+    content: cleanBase64,
     branch: GITHUB_BRANCH,
   };
   if (existingSha) body.sha = existingSha;
@@ -94,8 +107,11 @@ export default async function handler(req: any, res: any) {
   });
 
   if (!uploadResp.ok) {
-    const errBody = (await uploadResp.json()) as { message?: string };
-    return res.status(500).json({ error: errBody.message ?? "GitHub API error" });
+    const errBody = (await uploadResp.json()) as { message?: string; errors?: unknown };
+    return res.status(500).json({
+      error: errBody.message ?? "GitHub API error",
+      details: errBody.errors,
+    });
   }
 
   return res.status(200).json({
