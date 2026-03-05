@@ -135,9 +135,10 @@ const Admin = () => {
 
   // Image Library
   const { data: uploadedImages, isLoading: loadingImages } = useUploadedImages();
-  const [uploadFile, setUploadFile] = useState<File | null>(null);
-  const [uploadPreview, setUploadPreview] = useState<string | null>(null);
+  const [uploadFiles, setUploadFiles] = useState<File[]>([]);
+  const [uploadPreviews, setUploadPreviews] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<{ current: number; total: number } | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [deletingImageId, setDeletingImageId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -609,10 +610,26 @@ const Admin = () => {
     navigator.clipboard.writeText(text);
   };
 
-  const handleFileChange = (file: File) => {
-    setUploadFile(file);
-    setUploadPreview(URL.createObjectURL(file));
+  const handleFilesChange = (fileList: FileList | null) => {
+    if (!fileList) return;
+    const added = Array.from(fileList);
+    setUploadFiles((prev) => [...prev, ...added]);
+    setUploadPreviews((prev) => [...prev, ...added.map((f) => URL.createObjectURL(f))]);
     setUploadError(null);
+  };
+
+  const removeUploadFile = (index: number) => {
+    URL.revokeObjectURL(uploadPreviews[index]);
+    setUploadFiles((prev) => prev.filter((_, i) => i !== index));
+    setUploadPreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const clearUploadQueue = () => {
+    uploadPreviews.forEach((url) => URL.revokeObjectURL(url));
+    setUploadFiles([]);
+    setUploadPreviews([]);
+    setUploadError(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   // Compress image using canvas before upload.
@@ -656,63 +673,65 @@ const Admin = () => {
     });
 
   const handleUpload = async () => {
-    if (!uploadFile) return;
+    if (!uploadFiles.length) return;
     setUploading(true);
     setUploadError(null);
+    setUploadProgress(null);
+    let failed = 0;
     try {
       const idToken = await auth.currentUser?.getIdToken();
       if (!idToken) throw new Error("Not authenticated");
 
-      const { base64, size, mimeType: compressedMimeType } = await compressImage(uploadFile);
+      for (let i = 0; i < uploadFiles.length; i++) {
+        setUploadProgress({ current: i + 1, total: uploadFiles.length });
+        const file = uploadFiles[i];
+        try {
+          const { base64, size, mimeType: compressedMimeType } = await compressImage(file);
 
-      await new Promise<void>((resolve, reject) => {
-        (async () => {
-          try {
-            const resp = await fetch("/api/upload-image", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${idToken}`,
-              },
-              body: JSON.stringify({ filename: uploadFile.name, contentBase64: base64, mimeType: compressedMimeType }),
-            });
+          const resp = await fetch("/api/upload-image", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${idToken}`,
+            },
+            body: JSON.stringify({ filename: file.name, contentBase64: base64, mimeType: compressedMimeType }),
+          });
 
-            if (!resp.ok) {
-              const err = (await resp.json()) as { error?: string };
-              throw new Error(err.error ?? "Upload failed");
-            }
-
-            const result = (await resp.json()) as {
-              filename: string;
-              siteUrl: string;
-              githubRawUrl: string;
-              mimeType: string;
-              size: number;
-            };
-
-            await addDoc(collection(db, "uploadedImages"), {
-              filename: result.filename,
-              siteUrl: result.siteUrl,
-              githubRawUrl: result.githubRawUrl,
-              mimeType: result.mimeType,
-              size,
-              uploadedAt: new Date(),
-            });
-
-            queryClient.invalidateQueries({ queryKey: ["uploaded-images"] });
-            setUploadFile(null);
-            setUploadPreview(null);
-            if (fileInputRef.current) fileInputRef.current.value = "";
-            resolve();
-          } catch (err) {
-            reject(err);
+          if (!resp.ok) {
+            const err = (await resp.json()) as { error?: string };
+            throw new Error(err.error ?? "Upload failed");
           }
-        })();
-      });
+
+          const result = (await resp.json()) as {
+            filename: string;
+            siteUrl: string;
+            githubRawUrl: string;
+            mimeType: string;
+            size: number;
+          };
+
+          await addDoc(collection(db, "uploadedImages"), {
+            filename: result.filename,
+            siteUrl: result.siteUrl,
+            githubRawUrl: result.githubRawUrl,
+            mimeType: result.mimeType,
+            size,
+            uploadedAt: new Date(),
+          });
+        } catch (err) {
+          failed++;
+          console.error(`Failed to upload ${file.name}:`, err);
+        }
+      }
+
+      queryClient.invalidateQueries({ queryKey: ["uploaded-images"] });
+      clearUploadQueue();
+      if (failed > 0) setUploadError(`${failed} image${failed > 1 ? "s" : ""} failed to upload`);
     } catch (err: unknown) {
       setUploadError(err instanceof Error ? err.message : "Upload failed");
     } finally {
       setUploading(false);
+      setUploadProgress(null);
     }
   };
 
@@ -1941,43 +1960,55 @@ const Admin = () => {
                 ref={fileInputRef}
                 type="file"
                 accept="image/*"
+                multiple
                 className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) handleFileChange(file);
-                }}
+                onChange={(e) => handleFilesChange(e.target.files)}
               />
-              {uploadPreview ? (
-                <div className="flex items-start gap-6 flex-wrap">
-                  <img src={uploadPreview} alt="Preview" className="w-32 h-32 object-cover rounded-lg border" />
-                  <div className="space-y-2 flex-1 min-w-0">
-                    <p className="font-medium truncate">{uploadFile?.name}</p>
-                    <p className="text-sm text-muted-foreground">{formatFileSize(uploadFile?.size ?? 0)}</p>
-                    {uploadError && <p className="text-sm text-destructive">{uploadError}</p>}
-                    <div className="flex gap-3 flex-wrap">
-                      <Button onClick={handleUpload} disabled={uploading}>
-                        {uploading ? "Uploading…" : "Upload to repo"}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        disabled={uploading}
-                        onClick={() => {
-                          setUploadFile(null);
-                          setUploadPreview(null);
-                          setUploadError(null);
-                          if (fileInputRef.current) fileInputRef.current.value = "";
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
+              {uploadFiles.length > 0 ? (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                    {uploadFiles.map((file, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={uploadPreviews[index]}
+                          alt={file.name}
+                          className="w-full h-24 object-cover rounded-lg border"
+                        />
+                        {!uploading && (
+                          <button
+                            type="button"
+                            onClick={() => removeUploadFile(index)}
+                            className="absolute top-1 right-1 bg-black/60 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity leading-none"
+                          >
+                            ×
+                          </button>
+                        )}
+                        <p className="text-xs text-muted-foreground truncate mt-1">{file.name}</p>
+                      </div>
+                    ))}
+                  </div>
+                  {uploadError && <p className="text-sm text-destructive">{uploadError}</p>}
+                  <div className="flex gap-3 flex-wrap items-center">
+                    <Button onClick={handleUpload} disabled={uploading}>
+                      {uploading && uploadProgress
+                        ? `Uploading ${uploadProgress.current} of ${uploadProgress.total}…`
+                        : uploading
+                          ? "Uploading…"
+                          : `Upload ${uploadFiles.length} image${uploadFiles.length > 1 ? "s" : ""}`}
+                    </Button>
+                    <Button variant="outline" disabled={uploading} onClick={() => fileInputRef.current?.click()}>
+                      Add more
+                    </Button>
+                    <Button variant="ghost" disabled={uploading} onClick={clearUploadQueue}>
+                      Clear all
+                    </Button>
                   </div>
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-3 py-4 text-center">
-                  <p className="text-sm text-muted-foreground">Pick an image to upload (max 5 MB)</p>
+                  <p className="text-sm text-muted-foreground">Pick images to upload (max 5 MB each, auto-compressed)</p>
                   <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
-                    Choose image
+                    Choose images
                   </Button>
                 </div>
               )}
