@@ -2,12 +2,15 @@ import { Link } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 import { useHomeContent } from "@/hooks/useHomeContent";
 import { useProducts } from "@/hooks/useProducts";
+import ProductImage from "@/components/ProductImage";
+import { resolveProductFieldVisibility } from "@/types/content";
 
 const ProductsSection = () => {
   const { data: content, isLoading: isContentLoading, error } = useHomeContent();
   const { data: products, isLoading } = useProducts();
   const section = content?.productsSection;
   const catalogUrl = content?.resources?.catalogUrl || "#";
+  const fields = resolveProductFieldVisibility(content?.productFields);
 
   if (isContentLoading) {
     return (
@@ -47,7 +50,7 @@ const ProductsSection = () => {
             >
               {/* Image */}
               <div className="relative h-40 overflow-hidden">
-                <img
+                <ProductImage
                   src={product.image}
                   alt={product.name}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
@@ -64,11 +67,13 @@ const ProductsSection = () => {
                   <h3 className="text-xl font-display font-bold text-foreground group-hover:text-accent transition-colors">
                     {product.name}
                   </h3>
-                  <span className="text-xs font-medium text-accent bg-accent/10 px-2 py-1 rounded">
-                    {product.specs}
-                  </span>
+                  {fields.specs && product.specs?.trim() && (
+                    <span className="text-xs font-medium text-accent bg-accent/10 px-2 py-1 rounded">
+                      {product.specs}
+                    </span>
+                  )}
                 </div>
-                <p className="text-muted-foreground text-sm">{product.summary}</p>
+                {product.summary?.trim() && <p className="text-muted-foreground text-sm">{product.summary}</p>}
               </div>
             </Link>
           ))}

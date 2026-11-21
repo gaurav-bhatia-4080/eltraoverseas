@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Product } from "@/types/content";
+import { sortByName } from "@/lib/utils";
 
 const transformProduct = (docId: string, data: Product): Product => ({
   ...data,
@@ -13,7 +14,7 @@ export const useProducts = () => {
     queryKey: ["products"],
     queryFn: async () => {
       const snapshot = await getDocs(collection(db, "products"));
-      return snapshot.docs.map((docSnap) => transformProduct(docSnap.id, docSnap.data() as Product));
+      return sortByName(snapshot.docs.map((docSnap) => transformProduct(docSnap.id, docSnap.data() as Product)));
     },
   });
 };

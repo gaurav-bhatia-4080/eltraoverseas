@@ -23,6 +23,8 @@ import {
   FeaturesSectionContent,
   StatsSectionContent,
   UploadedImage,
+  ProductFieldVisibility,
+  resolveProductFieldVisibility,
 } from "@/types/content";
 import Navbar from "@/components/sections/Navbar";
 import Footer from "@/components/sections/Footer";
@@ -45,6 +47,55 @@ const parseList = (value: string) =>
     .split(",")
     .map((entry) => entry.trim())
     .filter(Boolean);
+
+const joinList = (values?: string[]) => (values ?? []).join(", ");
+
+/**
+ * Comma-separated list input. Keeps the raw text while typing so commas and spaces aren't
+ * swallowed, and reports the parsed list to the parent.
+ */
+const ListTextarea = ({
+  value,
+  onChange,
+  rows = 2,
+  placeholder,
+}: {
+  value?: string[];
+  onChange: (next: string[]) => void;
+  rows?: number;
+  placeholder?: string;
+}) => {
+  const [draft, setDraft] = useState(joinList(value));
+
+  useEffect(() => {
+    // Only resync when the list changed from outside (e.g. a different product was selected).
+    if (joinList(parseList(draft)) !== joinList(value)) {
+      setDraft(joinList(value));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  return (
+    <Textarea
+      rows={rows}
+      value={draft}
+      placeholder={placeholder}
+      onChange={(event) => {
+        setDraft(event.target.value);
+        onChange(parseList(event.target.value));
+      }}
+    />
+  );
+};
+
+const productFieldLabels: { key: keyof ProductFieldVisibility; label: string }[] = [
+  { key: "specs", label: "Specifications" },
+  { key: "materials", label: "Materials" },
+  { key: "finishes", label: "Finish" },
+  { key: "sizes", label: "Size" },
+  { key: "applications", label: "Applications" },
+  { key: "certifications", label: "Certifications & Standards" },
+];
 
 const contactFormDefaults = {
   namePlaceholder: "Priya Verma",
@@ -109,6 +160,8 @@ const Admin = () => {
   const [savingTestimonials, setSavingTestimonials] = useState(false);
   const [visibility, setVisibility] = useState<VisibilitySettings | null>(null);
   const [savingVisibility, setSavingVisibility] = useState(false);
+  const [productFields, setProductFields] = useState<ProductFieldVisibility>(resolveProductFieldVisibility());
+  const [savingProductFields, setSavingProductFields] = useState(false);
   const [resources, setResources] = useState<ResourceSettings>({ catalogUrl: "" });
   const [savingResources, setSavingResources] = useState(false);
   const [certificates, setCertificates] = useState<Certificate[]>([]);
@@ -226,6 +279,7 @@ const Admin = () => {
         stats: homeContent.visibility?.stats ?? true,
         products: homeContent.visibility?.products ?? true,
       });
+      setProductFields(resolveProductFieldVisibility(homeContent.productFields));
     }
   }, [homeContent]);
 
@@ -263,6 +317,8 @@ const Admin = () => {
       image: "",
       gallery: [],
       materials: [],
+      finishes: [],
+      sizes: [],
       applications: [],
       certifications: [],
     } satisfies Product);
@@ -404,6 +460,13 @@ const Admin = () => {
     setSavingVisibility(true);
     await setDoc(doc(db, "siteContent", "home"), { visibility }, { merge: true });
     setSavingVisibility(false);
+    await queryClient.invalidateQueries({ queryKey: ["home-content"] });
+  };
+
+  const saveProductFields = async () => {
+    setSavingProductFields(true);
+    await setDoc(doc(db, "siteContent", "home"), { productFields }, { merge: true });
+    setSavingProductFields(false);
     await queryClient.invalidateQueries({ queryKey: ["home-content"] });
   };
 
@@ -1504,6 +1567,35 @@ const Admin = () => {
           </section>
 
           {visibility!.products && (
+            <section className="card-industrial p-6 space-y-4">
+              <div className="flex items-center justify-between flex-wrap gap-6">
+                <div>
+                  <p className="text-sm text-muted-foreground">Catalog</p>
+                  <h2 className="text-xl font-display">Product Page Sections</h2>
+                  <p className="text-muted-foreground text-sm mt-2">
+                    Choose which sections appear on every product page. A section is also hidden automatically on
+                    any product where it is left empty.
+                  </p>
+                </div>
+                <Button onClick={saveProductFields} disabled={savingProductFields}>
+                  {savingProductFields ? "Saving..." : "Save sections"}
+                </Button>
+              </div>
+              <div className="grid md:grid-cols-3 gap-4 text-sm font-medium">
+                {productFieldLabels.map(({ key, label }) => (
+                  <label key={key} className="flex items-center gap-3">
+                    <Switch
+                      checked={productFields[key]}
+                      onCheckedChange={(checked) => setProductFields((prev) => ({ ...prev, [key]: checked }))}
+                    />
+                    Show {label}
+                  </label>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {visibility!.products && (
             <section className="card-industrial p-8 space-y-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -1581,23 +1673,47 @@ const Admin = () => {
               <label className="text-sm font-medium">Description</label>
               <Textarea value={productForm.description ?? ""} onChange={(event) => setProductForm({ ...productForm, description: event.target.value })} rows={3} />
             </div>
+            <div>
+              <label className="text-sm font-medium">Gallery URLs (comma separated)</label>
+              <ListTextarea value={productForm.gallery} onChange={(gallery) => setProductForm({ ...productForm, gallery })} />
+              <p className="text-xs text-muted-foreground mt-1">
+                Shown as clickable thumbnails under the primary image; customers can open any image full screen.
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              The fields below are comma separated. Empty fields are not shown on the product page.
+            </p>
             <div className="grid md:grid-cols-3 gap-4">
               <div>
-                <label className="text-sm font-medium">Gallery URLs (comma separated)</label>
-                <Textarea rows={2} value={(productForm.gallery ?? []).join(", ")} onChange={(event) => setProductForm({ ...productForm, gallery: parseList(event.target.value) })} />
-              </div>
-              <div>
                 <label className="text-sm font-medium">Materials</label>
-                <Textarea rows={2} value={(productForm.materials ?? []).join(", ")} onChange={(event) => setProductForm({ ...productForm, materials: parseList(event.target.value) })} />
+                <ListTextarea value={productForm.materials} onChange={(materials) => setProductForm({ ...productForm, materials })} />
               </div>
               <div>
-                <label className="text-sm font-medium">Applications</label>
-                <Textarea rows={2} value={(productForm.applications ?? []).join(", ")} onChange={(event) => setProductForm({ ...productForm, applications: parseList(event.target.value) })} />
+                <label className="text-sm font-medium">Finish</label>
+                <ListTextarea
+                  value={productForm.finishes}
+                  placeholder="e.g. Satin Nickel, Antique Brass, Black Matt"
+                  onChange={(finishes) => setProductForm({ ...productForm, finishes })}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Size</label>
+                <ListTextarea
+                  value={productForm.sizes}
+                  placeholder="e.g. 4 inch, 6 inch, 8 inch"
+                  onChange={(sizes) => setProductForm({ ...productForm, sizes })}
+                />
               </div>
             </div>
-            <div>
-              <label className="text-sm font-medium">Certifications</label>
-              <Textarea rows={2} value={(productForm.certifications ?? []).join(", ")} onChange={(event) => setProductForm({ ...productForm, certifications: parseList(event.target.value) })} />
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium">Applications</label>
+                <ListTextarea value={productForm.applications} onChange={(applications) => setProductForm({ ...productForm, applications })} />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Certifications</label>
+                <ListTextarea value={productForm.certifications} onChange={(certifications) => setProductForm({ ...productForm, certifications })} />
+              </div>
             </div>
             </section>
           )}

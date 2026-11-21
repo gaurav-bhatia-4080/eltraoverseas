@@ -1,6 +1,7 @@
 import { Youtube, Twitter, Linkedin, Instagram } from "lucide-react";
 import { useHomeContent } from "@/hooks/useHomeContent";
 import EltraLogo from "@/components/EltraLogo";
+import { sortByName } from "@/lib/utils";
 
 const iconMap = {
   twitter: Twitter,
@@ -67,7 +68,7 @@ const Footer = () => {
             <div key={column.title}>
               <h4 className="font-display font-bold text-primary-foreground mb-4">{column.title}</h4>
               <ul className="space-y-3">
-                {column.links.map((link) => (
+                {sortByName(column.links ?? []).map((link) => (
                   <li key={link.name}>
                     <a
                       href={link.href}
@@ -86,7 +87,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-8">
           <p className="text-primary-foreground/40 text-sm">{footer.copyright}</p>
           <div className="flex gap-6">
-            {footer.legalLinks.map((link) => (
+            {sortByName(footer.legalLinks ?? []).map((link) => (
               <a key={link.name} href={link.href} className="text-primary-foreground/40 hover:text-accent text-sm transition-colors">
                 {link.name}
               </a>

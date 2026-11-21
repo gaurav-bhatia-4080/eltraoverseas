@@ -154,6 +154,7 @@ export type HomeContent = {
     products?: boolean;
   };
   resources?: ResourceSettings;
+  productFields?: Partial<ProductFieldVisibility>;
   certificates?: Certificate[];
   gallery?: GalleryImage[];
 };
@@ -167,9 +168,32 @@ export type Product = {
   image: string;
   gallery: string[];
   materials: string[];
+  finishes?: string[];
+  sizes?: string[];
   applications: string[];
   certifications: string[];
 };
+
+/** Site-wide switches for which sections appear on product pages. Missing keys mean "show". */
+export type ProductFieldVisibility = {
+  specs: boolean;
+  materials: boolean;
+  finishes: boolean;
+  sizes: boolean;
+  applications: boolean;
+  certifications: boolean;
+};
+
+export const resolveProductFieldVisibility = (
+  value?: Partial<ProductFieldVisibility>,
+): ProductFieldVisibility => ({
+  specs: value?.specs ?? true,
+  materials: value?.materials ?? true,
+  finishes: value?.finishes ?? true,
+  sizes: value?.sizes ?? true,
+  applications: value?.applications ?? true,
+  certifications: value?.certifications ?? true,
+});
 
 export type Vlog = {
   slug: string;
