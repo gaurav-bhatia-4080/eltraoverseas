@@ -147,7 +147,10 @@ const ProductDetail = () => {
                     <button
                       key={image}
                       type="button"
-                      onClick={() => setActiveIndex(index)}
+                      onClick={() => {
+                        setActiveIndex(index);
+                        setLightboxOpen(true);
+                      }}
                       onMouseEnter={() => setActiveIndex(index)}
                       className={cn(
                         "aspect-square rounded-xl overflow-hidden border-2 bg-white transition-all",
@@ -155,7 +158,7 @@ const ProductDetail = () => {
                           ? "border-accent shadow-md"
                           : "border-border opacity-70 hover:opacity-100 hover:border-accent/50",
                       )}
-                      aria-label={`Show ${product.name} image ${index + 1}`}
+                      aria-label={`View ${product.name} image ${index + 1} full screen`}
                       aria-current={index === activeIndex}
                     >
                       <img
